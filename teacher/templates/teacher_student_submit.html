@@ -1,0 +1,79 @@
+{% extends 'teacher_index.html' %}
+{% block main %}
+<div class="row" style="background-color: #f6f6f6">
+<div style="height: 50px"></div>
+    <div class="dropdown">
+        <div style="display: flex;">
+            <button type="button"
+                    style="font-weight: bolder;height: 50px;width: 200px;font-size: larger;display: inline-block"
+                    class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                选择课程
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?id=0
+">全部课程</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                {% for t in class_data %}
+                    <li><a class="dropdown-item" href="?id={{ t.id }}">{{ t.name }}</a></li>
+                {% endfor %}
+            </ul>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="input-group input-group-lg mb-3" style="margin-left: 10px;margin-top: 1px;">
+                    <input id="stu_name" type="text" class="form-control" name="stu_name"
+                           placeholder="请输入学生账号或姓名">
+                    <button type="submit" class="btn btn-primary" name="query_btn">查询学生记录</button>
+                </div>
+
+            </form>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #2e1818">搜索功能仅能查询第一页</span>
+        </div>
+        <table class="table table-bordered" style="background-color: white;text-align: center;">
+            <thead>
+            <tr>
+                <th>记录编号</th>
+                <th>学生账号</th>
+                <th>学生姓名</th>
+                <th>课程名称</th>
+                <th>比赛名称</th>
+                <th>得分</th>
+                <th>提交时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for t in data %}
+            <tr>
+                <td>{{ t.id }}</td>
+                <td>{{ t.student_id.username }}</td>
+                <td>{{ t.student_id.name }}</td>
+                <td>{{ t.class_id.name }}</td>
+                <td>{{ t.race_id.name }}</td>
+                <td>{{ t.right_rate }}({{ t.race_id.evaluate_type }})</td>
+                <td>{{ t.time |date:"Y-m-d H:i:s"}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <ul class="pagination pagination-lg justify-content-center ">
+            {% if data.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ data.previous_page_number }}&id={{ class_id }}">&larr;
+                    上一页</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&larr; 上一页</a>
+                </li>
+            {% endif %}&nbsp;&nbsp;&nbsp;
+            <h3 style="margin-top:10px">{{ data.number }} / {{ data.paginator.num_pages }}</h3>
+            &nbsp;&nbsp;&nbsp;
+            {% if data.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ data.next_page_number }}&id={{ class_id }}">下一页
+                    &rarr;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">下一页 &rarr;</a></li>
+            {% endif %}
+
+        </ul>
+    </div>
+</div>
+{% endblock %}

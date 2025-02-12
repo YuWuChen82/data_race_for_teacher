@@ -1,0 +1,44 @@
+{% extends request.session.is_student|yesno:"master.html,masterTeacher.html" %}
+{% block content %}
+<div class="page-top clearfix">
+        <!--page main heading-->
+        <div class="container">
+            <h1 class="entry-title">值班人员</h1>
+            
+            <div class="page-discription">
+                 <p></p>
+            </div>
+        </div>
+</div>
+<div class="doctors-posts doctors-page clearfix">
+        <div class="container isotope-wrapper text-center">
+            <div class="row">
+                <div id="isotope-container" class="clearfix" >
+                     {% for t in experts %}
+                    <div class="isotope-item cardiac-clinic primary-health-care col-md-3 col-sm-6 " >
+                        <article class="common-doctor clearfix hentry">
+                            <!--doctor image-->
+                            <figure>
+                                    <img src="../media/avatar/{{t.avatar}}" alt="doctor-2" width="150px" height="250px">
+                            </figure>
+                            <div class="text-content">
+                                <!--doctor name-->
+                                <h5 class="entry-title"><a href="#">{{t.name}}</a></h5>
+                                <div class="doctor-departments text-left">
+                                    <a>姓名：{{ t.name }}</a><br>
+                                    <a>介绍：{{ t.introduction }}</a><br>
+                                    <a>擅长：</a><a>{{t.domain}}</a><br>
+                                    <a href="tencent://message/?uin={{t.qq}}&Site=&Menu=yes">QQ：{{t.qq}}</a><br>
+                                    <a>微信：{{ t.wechat}}</a><br>
+                                    <a>收费：{{ t.price }}</a>
+
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    {% endfor %}
+               </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'teacher_index.html' %}
+{% block main %}
+
+    <div class="row" style="background-color: whitesmoke">
+        <div class="row">
+            {% if notice == '1' %}
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>错误!</strong> 文件格式错误或文件内容不符合标准
+                </div>
+            {% elif notice == '2' %}
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>成功!</strong> 您的得分为{{ score }}。
+                </div>
+            {% endif %}
+        </div>
+<div style="height: 50px"></div>
+        <div class="row" >
+            <div class="col-md-3"></div>
+            <div class="col-md-8"><h3>【{{ race_data.type }}】{{ race_data.name }}</h3>
+                    <div style="height: 30px"></div>
+                    <span style="color: gray">开始时间&nbsp;&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.begin_time }}&nbsp;&nbsp;</span>
+                    <span style="color: gray">结束时间&nbsp;&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.over_time }}&nbsp;&nbsp;</span>
+                    <span style="color: gray">状态&nbsp;&nbsp;</span>
+                    {% if now_time > race_data.over_time %}
+                        <span style="font-size: 17px">已结束&nbsp;&nbsp;</span><br><br>
+                    {% elif now_time < race_data.begin.time %}
+                        <span style="font-size: 17px">未开始&nbsp;&nbsp;</span><br><br>
+                    {% else %}
+                        <span style="font-size: 17px">进行中&nbsp;&nbsp;</span><br><br>
+                    {% endif %}
+                    <span style="color: gray">发起人&nbsp;&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.teacher_id.name }}&nbsp;&nbsp;</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span style="color: gray">课程名称&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.class_id.name }}&nbsp;&nbsp;</span>
+                    <br><br>
+                </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1" style="background-color: white;"></div>
+        <div class="col-md-8" style="background-color: white;">
+            <div class="row">
+                <div>{{ race_data.content|safe }}</div>
+                <h4 style="display: inline-block"><a href="../../media/upload/{{ race_data.file_data }}"
+                       download="{{ race_data.name }}.zip">下载竞赛数据</a>&nbsp;<a href="../../media/upload/{{ race_data.file_answer }}"
+                       download="{{ race_data.name }}.csv">下载竞赛答案</a>&nbsp;<a href="../../media/rank/race_rank{{ race_data.id }}.csv"
+                                                     download="{{ race_data.name }}.csv">下载排名</a></h4>
+
+                <form role="form" method="post" action="" enctype="multipart/form-data">
+                    <div class="form-group">
+                        {% csrf_token %}
+                        <label for="submit_answer" style="font-weight: bolder">上传答案</label>
+                        <br>
+                        <input type="file" id="submit_answer" name="submit_answer" accept=".csv">
+                        <p>注：教师端提交仅显示分数，不参与排名</p>
+                        <p class="help-block" style="font-size: 13px">
+                            仅支持csv文件，第一行需为字段名，提交时请确保样本格式,数量正确</p>
+                    </div>
+                    <input type="hidden" name="race_id" value="{{ id }}">
+                    <input type="hidden" name="submit_answer_btn" value="1">
+                    <button type="submit" class="btn btn-outline-primary"
+                            style="width: 200px;height: 50px;font-size: 20px;font-weight: bolder">提交
+                    </button>
+
+                    <br><br><br><br>
+                </form>
+                <span>排行</span>
+            <form role="form" method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success"  style="width:15%;" name="sortByScore">按得分排序</button>&nbsp;
+                <button type="submit" class="btn btn-success" style="width: 15%" name="sortByUsername">按账号排序</button>
+            </form>
+
+                <table class="table table-striped" style="width: 1000px;border-collapse: collapse;
+			border: 1px solid #ddd;
+			color: #333;
+			font-size: 14px;">
+
+                    <colgroup>
+                        <col style="width: 10%;">
+                        <col style="width: 15%;">
+                        <col style="width: 10%;">
+                        <col style="width: 20%;">
+                        <col style="width: 15%;">
+                        <col style="width: 30%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>账号</th>
+                        <th>姓名</th>
+                        <th>组织</th>
+                        <th>{{ race_data.evaluate_type }}</th>
+                        <th>最优成绩提交日</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if rankList %}
+                        {% for line in rankList %}
+                        <tr>
+                            <td>{{ line.0 }}</td>
+                            <td>{{ line.1 }}</td>
+                            <td>{{ line.2 }}</td>
+                            <td>{{ line.3 }}</td>
+                            <td>{{ line.4 }}</td>
+                            <td>{{ line.5 }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        {% for line in rank %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ line.student_id.username }}</td>
+                                <td>{{ line.student_id.name }}</td>
+                                <td>{{ line.student_id.organization }}</td>
+                                <td>{{ line.score }}</td>
+                                <td>{{ line.time }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<div class="col-md-3"></div>
+    </div>
+{% endblock %}

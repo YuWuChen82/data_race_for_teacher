@@ -1,0 +1,206 @@
+{% extends 'teacher_index.html' %}
+{% block main %}
+        <div class="row" style="background-color:#f6f6f6;display:flex">
+            <div class="row" style="display: flex; align-items: center;">
+                {% if notice %}
+                <div class="alert alert-info alert-dismissible fade show">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>提示!</strong> {{ notice }}。
+                </div>
+                {% else %}
+                <div style="height: 50px"></div>
+                {% endif %}
+                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#add_question"
+                        style="width: 15%">增加学生
+                </button>&nbsp;
+                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#fileModal"
+                        style="display:inline-block;width: 15%">批量导入
+                </button>
+                <form style="display: inline-block; flex: 1;" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <button class="btn btn-primary btn-lg" name="race_number_sort" type="submit">按照比赛数量排序
+                    </button>
+
+                    <button class="btn btn-primary btn-lg" type="button" onclick="window.location.href='../../media/class/class{{ class_id }}.csv'">导出学生名单</button>
+                </form>
+            </div>
+
+            <div style="height: 50px"></div>
+            <div class="row">
+                <table class="table table-bordered" style="font-size:20px;background-color: white">
+                    <tbody>
+                    <tr>
+                        <th style="width: 10%">编号</th>
+                        <th style="width: 10%">姓名</th>
+                        <th style="width: 10%">账号</th>
+                        <th style="width: 20%">参加的比赛数量</th>
+                        <th style="width: 30%">操作</th>
+                    </tr>
+                    {% for t in data %}
+                        <tr>
+                            <td>{{ t.0 }}</td>
+                            <td>{{ t.1 }}</td>
+                            <td>{{ t.2 }}</td>
+                            <td>{{ t.3 }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#change_question"
+                                            onclick="change_name.value='{{ t.1 }}';change_username.value= '{{ t.2 }}';change_stu_id.value ='{{ t.0 }}'"
+                                            style="font-weight: bolder;color: white">
+                                        修改学生信息
+                                    </button>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#reset_password"
+                                            onclick="reset_notice.value='确定要重置‘{{ t.1 }}’的密码吗？(密码将重置为123456)';student_id_reset.value = '{{ t.0 }}'"
+                                            style="font-weight: bolder">
+                                        重置密码
+                                    </button>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                            data-bs-target="#delete_question"
+                                            onclick="delete_notice.value='确定要移除学生‘{{ t.1 }}’吗？(在本课程的参赛记录也会删除)'; student_id.value = '{{ t.0 }}'"
+                                            style="font-weight: bolder">
+                                        移除学生
+                                    </button>
+
+                                </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<!-- 增加学生（Modal） -->
+<form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="add_question" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        {% csrf_token %}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">增加学生</h4>
+                </div>
+
+                <div class="form-group" style="padding: 10px;">
+                    <span style="font-weight: bolder;font-size: 25px">姓名</span>&nbsp;&nbsp;<span
+                        style="color: #928d8d">用来展示排名</span>
+                    <input type="text" class="form-control" placeholder="请输入姓名" style="height: 40px"
+                           name="add_name">
+                    <br>
+                    <input type="hidden" id="add_class_id" name="add_class_id">
+                    <span style="font-weight: bolder;font-size: 25px">账号</span>&nbsp;&nbsp;<span
+                        style="color: #928d8d">用来登录</span><span
+                        style="color: #ff0000">若该账号已存在则不用输入姓名和密码</span>
+                    <input type="text" class="form-control" placeholder="请输入账号" style="height: 40px" name="add_username">
+                    <br>
+                    <span style="font-weight: bolder;font-size: 25px">密码</span>&nbsp;&nbsp;<span style="color: #928d8d">不填密码默认为123456</span>
+                    <input type="text" class="form-control" placeholder="请输入密码" style="height: 40px" name="add_password">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary" name = "add_btn">提交更改</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+<!-- 修改学生信息（Modal） -->
+<form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="change_question" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">        {% csrf_token %}
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">修改学生信息</h4>
+                </div>
+
+                <div class="form-group" style="padding: 10px;">
+                    <h3>姓名</h3>
+                    <input type="text" class="form-control" placeholder="请输入姓名" style="height: 70px"
+                           name="change_name" id="change_name">
+                    <h3>账号</h3>
+                    <input type="text" class="form-control" placeholder="请输入账号" style="height: 70px"
+                           name="change_username" id="change_username">
+                </div>
+
+                <input type="hidden" name="change_stu_id" id="change_stu_id" value="">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary" name = "change_btn">提交更改</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+<!-- 删除学生（Modal） -->
+<form role="form" method="post" enctype="multipart/form-data">
+
+    <div class="modal fade" id="delete_question" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">        {% csrf_token %}
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">移除学生</h4>
+                </div>
+                <input type="hidden" name="student_id" id="student_id">
+                <textarea class="modal-body" type="" name="delete_notice" id="delete_notice"
+                          style="color: red;font-size: 20px; resize: none;border: none;width: auto;height: auto;overflow: hidden "></textarea>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary" name="delete_btn">确定</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</form>
+<!--批量导入(Modal) -->
+<form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">        {% csrf_token %}
+
+                    <h4 class="modal-title" id="myModalLabel">批量导入</h4>
+                </div>
+                <div class="modal-body">
+                    <label for="inputfile">格式:csv,只能有两列，行数不限 <br>内容:第一行不读取,第一行为字段名,从左到右分别是姓名,账号<br>批量导入的学生密码均为123456,密码可在学生端修改</label>
+                    <p style="color: red">请确保该账号名不存在，否则会将当前已存在账号加入课程，届时可选择是否移除</p>
+                    <input type="file" id="imyFile" name="myFile">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary" name = "submit_file">提交文件</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+    <!-- 重置学生密码（Modal） -->
+    <form role="form" method="post" enctype="multipart/form-data">
+
+        <div class="modal fade" id="reset_password" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">        {% csrf_token %}
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">重置密码</h4>
+                    </div>
+                    <input type="hidden" name="student_id_reset" id="student_id_reset">
+                    <textarea class="modal-body" type="" name="reset_notice" id="reset_notice"
+                              style="color: red;font-size: 20px; resize: none;border: none;width: auto;height: auto;overflow: hidden "></textarea>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary" name="reset_btn">确定</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+    </form>
+{% endblock %}

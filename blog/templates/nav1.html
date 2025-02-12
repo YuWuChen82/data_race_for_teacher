@@ -1,0 +1,79 @@
+{#<header id="header">#}
+{#    <div class="container">#}
+{##}
+{#        <!-- Website Logo -->#}
+{#        <div class="logo clearfix">#}
+{#            <a href="index.html">#}
+{#                <h4 style="color: #f18b5a;">数据竞赛学习论坛</h4>#}
+{#                <!--<img src="images/temp-images/logo-two.png" alt="Medicalpress">-->#}
+{#            </a>#}
+{#        </div>#}
+{##}
+{#        <!-- Main Navigation -->#}
+{#        <nav class="main-menu">#}
+{#            <ul class="header-nav clearfix" id="menu-main-menu">#}
+{#                <li>#}
+{#                    <a href="index.html">主页</a>#}
+{#                </li>#}
+{#                <li >#}
+{#                    <a href="kb.html">知识</a>#}
+{#                </li>#}
+{#                <li >#}
+{#                    <a href="case.html">案例</a>#}
+{#                </li>#}
+{#                <li>#}
+{#                    <a href="video.html">视频</a>#}
+{#                </li>#}
+{#                 <li>#}
+{#                    <a href="expert.html">值班</a>#}
+{#                </li>#}
+{#                {% if request.session.identity == '教师' %}#}
+{#                    <li>#}
+{#                        <a href="teacher/article.html">后台</a>#}
+{#                    </li>#}
+{#                    <li>#}
+{#                        <a href="/teacher/teacher_index.html">返回竞赛</a>#}
+{#                    </li>#}
+{#                    {% else %}#}
+{#                    <li>#}
+{#                        <a href="/student/student_my_race.html">返回竞赛</a>#}
+{#                    </li>#}
+{#                {% endif %}#}
+{#            </ul>#}
+{#        </nav>#}
+{#        <div id="responsive-menu-container"></div>#}
+{#    </div>#}
+{#</header>#}
+    <div class="row" style="font-size: 20px;font-weight:500;">
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand"  href="/student/student_index.html"
+                       style="font-size: 25px;">数据竞赛</a>
+                </div>
+                <div>
+                    <ul class="nav navbar-nav">
+                        <li><a href="/student/student_race.html">竞赛训练</a></li>
+                                                <li><a href="/student/student_dataAnalysis.html">竞赛分析</a></li>
+
+                        <li><a href="/blog/index.html">知识分享</a></li>
+                        <li><a href="/blog/dataShare.html?allpage=1">数据资源</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-user"></span> {{request.session.username}} <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" style="font-size: large">
+                        <li><a href="/student/student_homepage.html">个人主页</a></li>
+                        <li><a href="/blog/expert.html">值班人员</a></li>
+                        <li><a href="/logout">退出登录</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+
+                </div>
+            </div>
+        </nav>
+    </div>

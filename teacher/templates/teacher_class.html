@@ -1,0 +1,203 @@
+{% extends 'teacher_index.html' %}
+{% block main %}
+    <style>
+        .btn {
+            font-size: large;
+        }
+    </style>
+    <br>
+    <div class="row" style="background-color:#ffffff">
+        {#            <div class="card" style="display: flex;align-items: center;transform: scale(0.95)">#}
+        {#                <a data-bs-toggle="modal" data-bs-target="#myModal1" style="align-items: center;text-align: center">#}
+        {#                    <img src="../static/image/add-one.png" style="height: 200px;">#}
+        {#                <h3>创建课程</h3>#}
+        {#                </a>#}
+        {#            </div>#}
+        <button class="btn btn-success" style="width: 200px" data-bs-toggle="modal" data-bs-target="#myModal1">
+            创建课程
+        </button>
+        {% if notice != '1' %}
+
+            {#                    <div class="card" style="display: flex;text-align: center;transform: scale(0.96)">#}
+            {#                        <div class="row">#}
+            {#                            <div class="col-md-8">#}
+            {#                                <div class="card" style="width: auto;background-color: rgba(248,248,233,0.58)">#}
+            {#                                    <div class="card-body">#}
+            {#                                        <h2 class="card-title" style="text-align: center;">{{ t.name }}</h2>#}
+            {#                                        <p class="card-text" style="text-align: center;">{{ t.brief }}</p>#}
+            {#                                        <div class="row">#}
+            {#                                                <p class="card-text" style="text-align: left; padding-left: 20px;">时间：<span#}
+            {#                                                        style="font-weight: bold;">{{ t.class_time }}</span></p>#}
+            {#                                                <p class="card-text" style="text-align: left; padding-left: 20px;">地点：<span#}
+            {#                                                        style="font-weight: bold;">{{ t.address }}</span></p>#}
+            {#                                                <p class="card-text" style="text-align: left; padding-left: 20px;">人数：<span#}
+            {#                                                        style="font-weight: bold;">{{ t.num }}</span></p>#}
+            {#                                        </div>#}
+            {#                                    </div>#}
+            {#                                </div>#}
+            {#                            </div>#}
+            {#                            <div class="col-md-4">#}
+            {#                                <div class="row">#}
+            {#                                    <div class="col-md-6">#}
+            {#                                        <div style="height: 5px"></div>#}
+            {#                                        <a class="btn btn-primary centered-btn" href="teacher_class_detail.html?id={{t.id}}"#}
+            {#                                           role="button">进入课程</a>#}
+            {##}
+            {#                                        <div style="height: 50px"></div>#}
+            {#                                        <a data-bs-toggle="modal" data-bs-target="#myModal" class="btn btn-danger centered-btn"#}
+            {#                                           role="button"#}
+            {#                                           onclick="delete_class.value='确定要删除课程”{{ t.name }}“吗';class_id.value='{{t.id}}'">#}
+            {#                                            删除课程#}
+            {#                                        </a>#}
+            {#                                    </div>#}
+            {#                                </div>#}
+            {#                            </div>#}
+            {#                        </div>#}
+            {#                    </div>#}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>课程名</th>
+                    <th>课程简介</th>
+                    <th>时间</th>
+                    <th>地点</th>
+                    <th>人数</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for t in data %}
+                    <tr>
+                        <td>{{ t.name }}</td>
+                        <td>{{ t.brief }}</td>
+                        <td>{{ t.class_time }}</td>
+                        <td>{{ t.address }}</td>
+                        <td>{{ t.num }}</td>
+                        <td><a class="btn btn-primary" href="teacher_class_detail.html?id={{ t.id }}"
+                               role="button">进入课程</a>
+                            <a data-bs-toggle="modal" data-bs-target="#myModal" class="btn btn-danger"
+                               role="button"
+                               onclick="delete_class.value='确定要删除课程”{{ t.name }}“吗';class_id.value='{{ t.id }}'">
+                                删除课程
+                            </a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <ul class="pagination pagination-lg justify-content-center ">
+                {% if data.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ data.previous_page_number }}">&larr;
+                        上一页</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">&larr; 上一页</a>
+                    </li>
+                {% endif %}&nbsp;&nbsp;&nbsp;
+                <h3 style="margin-top:10px">{{ data.number }} / {{ data.paginator.num_pages }}</h3>
+                &nbsp;&nbsp;&nbsp;
+                {% if data.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ data.next_page_number }}">下一页
+                        &rarr;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">下一页 &rarr;</a></li>
+                {% endif %}
+
+            </ul>
+        {% endif %}
+    </div>
+    <form action="" method="post" enctype="multipart/form-data">
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        {% csrf_token %}
+                        <h4 class="modal-title" id="myModalLabel">删除课程</h4>
+                    </div>
+                    <input type="hidden" name="class_id" id="class_id">
+                    <textarea readonly class="modal-body" type="" name="delete_class" id="delete_class"
+                              style="color: red;font-size: 20px; resize: none;border: none;width: auto;height: auto;overflow: hidden "></textarea>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary" name="delete_btn">提交更改</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+    </form>
+    <!--添加班级-->
+    <form action="" method="post" enctype="multipart/form-data">
+        <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1"
+             aria-hidden="true">
+            <div class="modal-dialog">{% csrf_token %}
+                <div class="modal-content" style="padding: 10px">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel1">创建课程</h4>
+                    </div>
+
+
+                    <label for="name" style="font-size: 18px">课程名称</label>
+                    <input type="text" class="form-control" id="class_name" name="class_name"
+                           placeholder="请输入名称"
+                           style="height: 50px">
+                    <div style="height: 20px"></div>
+                    <label for="name" style="font-size: 18px">课程简介</label>
+                    <input type="text" class="form-control" id="class_brief" name="class_brief"
+                           placeholder="请输入简介"
+                           style="height: 50px">
+                    <div style="height: 20px"></div>
+                    <label for="name" style="font-size: 18px">上课时间</label>
+                    <input type="text" class="form-control" id="class_time" name="class_time"
+                           placeholder="请输入时间"
+                           style="height: 50px">
+                    <div style="height: 20px"></div>
+                    <label for="name" style="font-size: 18px">上课地点</label>
+                    <input type="text" class="form-control" id="class_address" name="class_address"
+                           placeholder="请输入地点"
+                           style="height: 50px">
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary" name="add_btn">提交更改</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+    </form>
+    <!--添加教师账号-->
+    <form action="" method="post" enctype="multipart/form-data">
+        <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1"
+             aria-hidden="true">
+            <div class="modal-dialog">{% csrf_token %}
+                <div class="modal-content" style="padding: 10px">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel1">添加教师</h4>
+                    </div>
+
+                    <label for="name" style="font-size: 18px">教师名称</label>
+                    <input type="text" class="form-control" id="class_name" name="name" placeholder="请输入名称"
+                           style="height: 50px">
+                    <div style="height: 20px"></div>
+                    <label for="name" style="font-size: 18px">账号</label>
+                    <input type="text" class="form-control" id="class_name" name="user_name"
+                           placeholder="请输入账号"
+                           style="height: 50px">
+                    <div style="height: 20px"></div>
+                    <label for="name" style="font-size: 18px">密码（必填）</label>
+                    <input type="text" class="form-control" id="class_brief" name="password"
+                           placeholder="请输入密码"
+                           style="height: 50px">
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary" name="add_teacher_btn">提交更改</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+    </form>
+{% endblock %}
+

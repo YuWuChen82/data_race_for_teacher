@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>后台管理</title>
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <style>
+
+        .card {
+            padding: 20px;
+            width: 50%; /* 设置每个卡片的宽度为容器的一半 */
+            height: auto;
+        }
+
+        .vertical-divider {
+            border-left: 1px solid #ccc; /* 竖线的样式，可以根据需要自定义 */
+            height: 100%; /* 确保竖线的高度与列相同 */
+            margin: 0 15px; /* 根据需要调整左右外边距 */
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="row" style="">
+    <div class="card bg-dark text-white" style="width: 100%;height: 80px;margin-top: -30px;">
+        <div class="card-body">
+            <h3 style="display: inline-block;margin-left: 60px">后台管理</h3>
+
+            <a style="margin-left: 10px;color: white" href="/logout">退出系统</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            {% include 'nav.html' %}
+        </div>
+        <div class="col-md-10">
+            {% block main %}
+                <style>
+                h4{
+                    font-weight: bold;
+                    font-size: large;
+                }
+                </style>
+                <form action="" enctype="multipart/form-data" method="post"
+                      style="background-color: #f6f6f6;color: rgb(0,0,0)">
+                    <br>
+                    {% csrf_token %}
+                    <div class="row">
+                        {% if notice == '1' %}
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <strong>错误!</strong> 文件错误或部分内容未填写
+                            </div>
+                        {% elif notice == '2' %}
+                            <div class="alert alert-success alert-dismissible fade show">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <strong>成功!</strong> 成功发布了比赛。
+                            </div>
+                        {% endif %}
+                    </div>
+                    <br>
+                    <div class="row" >
+                        <div class="col-md-2"></div>
+
+                        <div class="col-md-8" style="background-color: white">
+                            <h4>竞赛标题</h4>
+                            <input class="form-control" name='race_name' placeholder="请输入竞赛标题" type="text"
+                                    required style="">
+                           <hr><h4>竞赛类型</h4>
+                            <div class="radio">
+                                <label>
+                                    <input id="optionsRadios1" name="race_type" type="radio" value="学习赛" required>
+                                    学习赛
+                                </label>
+                                &nbsp;
+                                <label>
+                                    <input id="optionsRadios2" name="race_type" type="radio" value="学术研究赛"
+                                           required>学术研究赛
+                                </label>
+                            </div><hr>
+                            <h4 style="display: inline-block;">开始时间</h4>
+                                        <input name="begin_time" style="width: 200px" type="date" value="" id="begin_time" required>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h4 style="display: inline-block">结束时间</h4>
+                                        <input name="over_time" style="width: 200px" type="date" value="" id="over_time" required>
+                            <hr><h4 data-bs-toggle="tooltip" data-bs-placement="left" title="根据评价指标计算得分以及排行">评价指标</h4>
+                            <div class="radio" style="display: inline-block;width: 100px">
+                                                    <label>
+                                                        <input  name="evaluate_type" type="radio" value="ACC" id="radioOption"
+                                                               data-bs-toggle="tooltip" data-bs-placement="left" title="准确率" required> ACC
+                                                    </label>
+                                                </div>
+                                                <div class="radio" style="display: inline-block;width: 100px">
+                                                    <label data-bs-toggle="tooltip" data-bs-placement="left" title="精准率"
+                                                           >
+                                                        <input  name="evaluate_type" type="radio" value="P" required> P
+                                                    </label>
+                                                </div>
+                                                <div class="radio" style="display: inline-block;width: 100px">
+                                                    <label data-bs-toggle="tooltip" data-bs-placement="left" title="召回率"
+                                                           >
+                                                        <input  name="evaluate_type" type="radio" value="R" required> R
+                                                    </label>
+                                                </div>
+                                                <div class="radio" style="display: inline-block;width: 100px">
+                                                    <label data-bs-toggle="tooltip" data-bs-placement="left" title="ROC曲线下的面积"
+                                                           >
+                                                        <input  name="evaluate_type" type="radio" value="AUC" required>AUC
+                                                    </label>
+                                                </div>
+                                                <div class="radio" style="display: inline-block;width: 100px">
+                                                    <label data-bs-toggle="tooltip" data-bs-placement="left" title="均方根误差"
+                                                           >
+                                                        <input  name="evaluate_type" type="radio" value="RMSE" required>RMSE
+                                                    </label>
+                                                </div>
+                                                <div class="radio" style="display: inline-block;width: 100px">
+                                                    <label data-bs-toggle="tooltip" data-bs-placement="left" title="F1分数"
+                                                           >
+                                                        <input  name="evaluate_type" type="radio" value="F1" required>F1
+                                                    </label>
+                                                </div>
+                            <hr>
+ <h4 style="display: inline-block" title="文件后缀必须为zip" data-bs-toggle="tooltip" data-bs-placement="top" >文件上传</h4>
+                                        <input name="file_data" style="display: inline-block;width: 170px" type="file" title="请上传zip文件" accept=".zip" required>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <h4 style="display: inline-block" title="答案后缀必须为csv" data-bs-toggle="tooltip" data-bs-placement="top">答案上传</h4>
+                                        <input name="file_answer" style="display: inline-block" type="file" title="请上传csv文件" accept=".csv" required>
+                            <hr><h4 data-bs-toggle="tooltip" data-bs-placement="left" title="选择发布的班级，可多选">课程选择</h4>
+                                        {% for t in class_data %}
+                                            <div class="form-check" style="display: inline-block;width: 200px">
+                                                <input type="checkbox" class="form-check-input" id="{{ t.id }}" name="class_name"
+                                                       value="{{ t.id }}" >
+                                                <label class="form-check-label" for="{{ t.id }}" >{{ t.name }}</label>
+                                            </div>
+
+                                        {% endfor %}
+
+                            <hr><h4>竞赛内容</h4>
+                            <script class="" id="ueditor1" name="question_introduce" style="" type="text/plain" value=><h2>赛题背景及介绍</h2>
+                    <br><br><h2>目的</h2><br><br><h2>字段和说明</h2><br><br><h2>评价标准</h2><br><br>
+
+                            </script>
+<br>
+                        <button class="btn btn-success" style="height: 50px;width: 200px;font-size: 20px;font-weight: bold;"
+                                                type="submit">上传竞赛
+                                        </button>
+                                        <span>答案第一行必须为字段名，学生提交答案时，验证集的样本顺序应与答案保持一致，若答案格式不是csv或行数与答案不同都无法提交，
+                                            建议详细说明答案字段。</span>
+                                        <span style="color: red">答案第二列需为预测的标签，用于评价指标</span>
+                        </div>
+                        <div class="col-md-2"></div>
+
+                    </div>
+
+
+                </form>
+                <script charset="utf-8" src="/static/ueditor/ueditor.config.js" type="text/javascript"></script>
+                <script charset="utf-8" src="/static/ueditor/ueditor.all.js" type="text/javascript"></script>
+                <script charset="utf-8" src="/static/ueditor/lang/zh-cn/zh-cn.js" type="text/javascript"></script>
+                <script type="text/javascript">
+                    //实例化编辑器
+                    var ue = UE.getEditor('ueditor1', {
+                        autoHeightEnabled: true,
+                        autoFloatEnabled: true
+                    });
+
+                    function setContent(isAppendTo) {
+                        UE.getEditor('ueditor1').setContent(isAppendTo);
+
+                    }
+                </script>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+<script>
+    // 获取当前页面的URL路径
+    var currentPath = window.location.pathname;
+    // 根据当前页面的URL路径来切换活动菜单项
+    if (currentPath.includes("teacher_homepage.html")) {
+        document.getElementById("menu-home").classList.add("active");
+    } else if (currentPath.includes("teacher_class.html")) {
+        document.getElementById("menu-class").classList.add("active");
+    } else if (currentPath.includes("teacher_class_detail.html")) {
+        document.getElementById("menu-class").classList.add("active");
+    } else if (currentPath.includes("teacher_my_race.html")) {
+        document.getElementById("menu-my_race").classList.add("active");
+    } else if (currentPath.includes("teacher_student_submit.html")) {
+        document.getElementById("menu-student_submit").classList.add("active");
+    } else if (currentPath.includes("teacher_add_admin.html")) {
+        document.getElementById("menu-add_admin").classList.add("active");
+    } else if (currentPath.includes("teacher_index.html")) {
+        document.getElementById("menu-my_race").classList.add("active");
+    } else if (currentPath.includes("teacher_change_race.html")) {
+        document.getElementById("menu-my_race").classList.add("active");
+    } else if (currentPath.includes("teacher_race_detail.html")) {
+        document.getElementById("menu-my_race").classList.add("active");
+    } else if (currentPath.includes("blog")) {
+        document.getElementById("menu-dataShare").classList.add("active");
+    }
+    // 其他菜单项同理
+</script>
+<script>
+                                        const beginTimeInput = document.getElementById('begin_time');
+                                        const overTimeInput = document.getElementById('over_time');
+
+                                        // 监听begin_time和over_time的值变化
+                                        beginTimeInput.addEventListener('input', validateTime);
+                                        overTimeInput.addEventListener('input', validateTime);
+
+                                        function validateTime() {
+                                            const beginTimeValue = new Date(beginTimeInput.value).getTime();
+                                            const overTimeValue = new Date(overTimeInput.value).getTime();
+
+                                            if (beginTimeValue && overTimeValue && beginTimeValue > overTimeValue) {
+                                                // 如果begin_time大于over_time，则给出错误提示或进行相应的处理
+                                                window.alert("错误：开始时间不能晚于结束时间，请重新选择时间范围");
+                                                // 清空begin_time和over_time的值
+                                                overTimeInput.value = '';
+                                            }
+                                        }
+                                    </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+{% extends 'student_index.html' %}
+{% block main %}
+    <style>
+
+        .btn {
+            font-size: large;
+        }
+
+    </style>
+    <div class="row">
+        <button id="load-chart-button1" class="btn btn-success">全部竞赛</button>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">单个竞赛
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                {% for t in race %}
+                    <li><a href="#" data-race-id="{{ t.race_id.id }}">{{ t.race_id.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <script src="../static/js/echarts.js"></script>
+        <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+        <div id="main1" style="width: 1300px;height:500px;background-color: white;display: none"></div>
+        <div id="main2" style="width: 1300px;height:500px;background-color: white;display: none"></div>
+
+        <script type="text/javascript">
+            var main1 = document.getElementById("main1");
+    var main2 = document.getElementById("main2");
+            // 监听下拉菜单选项的点击事件
+            $('.dropdown-menu a').on('click', function (e) {
+ main1.style.display = "block";
+        main2.style.display = "none";
+                // 获取选项中的竞赛ID
+                var raceId = $(this).data('race-id');
+                // 发起Ajax请求
+                $.ajax({
+                    type: "GET",
+                    url: "/student/raceData?id=" + raceId, // 替换为你的API端点，可以包括 raceId 参数
+                    success(data) {
+                        var myChart = echarts.init(document.getElementById('main1'));
+                        var xAxisData = data.rankX;
+                        var type = data.type;
+                        var seriesData = data.rankY.map(function (item) {
+                            return {
+                                value: item[0],
+
+                                label: {
+                                    show: true,
+                                    position: 'top',
+
+                                }
+                            };
+                        });
+
+                        // 指定图表的配置项和数据
+                        var option = {
+                            title: {
+                                text: '单个比赛得分情况'
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                                position: function (point, params, dom, rect, size) {
+                                    return ['40%', 30];
+                                },
+                                formatter: function (params) {
+                                    var time = params[0].name; // 获取 X 轴的时间值
+                                    var value = params[0].value; // 获取 Y 轴的数值
+
+                                    // 将时间字符串转换为 Date 对象
+                                    var date = new Date(time);
+
+                                    // 设置中国的时区偏移（东八区，480分钟）
+                                    var chinaTimezoneOffset = -480;
+
+                                    // 使用偏移值调整时间
+                                    date.setMinutes(date.getMinutes() - chinaTimezoneOffset);
+
+                                    // 格式化时间，显示时分
+                                    var formattedTime = date.toISOString();
+
+                                    return '时间：' + formattedTime + '<br/>得分：' + value;
+                                }
+                            },
+                            legend: {
+                                data: ['得分']
+                            },
+                            xAxis: {
+                                name: "提交时间",
+                                data: xAxisData,
+                                axisLabel: {
+                                    interval: 1,
+                                    formatter: function (value) {
+                                        var date = new Date(value);
+                                        // 使用 getTimezoneOffset 来获取本地时区偏移
+                                        var offset = date.getTimezoneOffset();
+                                        date.setMinutes(date.getMinutes() - offset); // 转换时区
+                                        // 格式化时间，显示时分
+                                        var formattedTime = date.toISOString().slice(11, 16);
+                                        return formattedTime;
+                                    }
+                                }
+                            },
+
+                            yAxis: {
+                                name: "得分" + type,
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: function (value) {
+                                        // 截取 y 值的前 3 个字符
+                                        return value.toFixed(1).toString();
+                                    }
+                                },
+                            },
+                            series: [
+                                {
+                                    data: seriesData,
+                                    type: 'line',
+                                }
+                            ]
+                        };
+
+                        // 使用刚指定的配置项和数据显示图表。
+                        myChart.setOption(option);
+                    },
+                    error: function (xhr, status, error) {
+                        // 处理Ajax请求错误
+                        console.log("Ajax request failed with status: " + status + ", error: " + error);
+                    }
+                });
+            })
+            ;
+
+
+            var loadChartButton1 = document.getElementById('load-chart-button1');
+
+            loadChartButton1.addEventListener('click', function () {
+                 main1.style.display = "none";
+        main2.style.display = "block";
+                // Ajax请求数据
+                $.ajax({
+                    type: "get",
+                    url: "/student/rankData",
+                    success(data) {
+                        var myChart = echarts.init(document.getElementById('main2'));
+                        var xAxisData = data.rankX;
+                        var seriesData = data.rankY.map(function (item) {
+                            return {
+                                value: item[0],
+                                label: {
+                                    show: true,
+                                    position: 'top',
+                                    formatter: '{c}(' + item[1] + ')'
+                                }
+                            };
+                        });
+
+                        // 指定图表的配置项和数据
+                        var option = {
+                            title: {
+                                text: '所有比赛得分情况'
+                            },
+                            tooltip: {},
+                            legend: {
+                                data: ['得分']
+                            },
+                            xAxis: {
+                                name: "竞赛名称",
+                                data: xAxisData,
+                                axisLabel: {
+                                    interval: 0,
+                                    formatter: function (value) {
+                                        if (value.length > 6) {
+                                            return value.slice(0, 6) + "...";
+                                        } else {
+                                            return value;
+                                        }
+                                    }
+                                }
+                            },
+                            yAxis: {
+                                name: "得分",
+                                type: 'value',
+                            },
+                            series: [
+                                {
+                                    data: seriesData,
+                                    type: 'line',
+                                }
+                            ]
+                        };
+
+                        // 使用刚指定的配置项和数据显示图表。
+                        myChart.setOption(option);
+                    }
+                });
+            });
+
+        </script>
+
+    </div>
+
+{% endblock %}

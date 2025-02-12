@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-US"><!--<![endif]-->
+<head>
+    <!-- META TAGS -->
+    <meta charset="UTF-8">
+
+    <!-- Title -->
+    <title>论坛系统</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <!-- Define a view port to mobile devices to use - telling the browser to assume that
+    the page is as wide as the device (width=device-width)
+     and setting the initial page zoom level to be 1 (initial-scale=1.0) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="SKYPE_TOOLBAR" content ="SKYPE_TOOLBAR_PARSER_COMPATIBLE"/>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="images/favicon-new.png">
+
+    <!-- bootstrap Style Sheet (caution ! - Do not edit this stylesheet) -->
+    <link rel="stylesheet" href="../static/css/bootstrap.css" type="text/css" media="all">
+    <!-- Flexslider stylesheet -->
+    <!--<link rel="stylesheet" href="../static/css/flexslider.css" type="text/css" media="all">-->
+    <!--&lt;!&ndash; Animations stylesheet &ndash;&gt;-->
+    <link rel="stylesheet" href="../static/css/animations.css" type="text/css" media="all">
+
+    <!-- Awesome Font stylesheet -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" media="all">
+    
+    <link href="https://use.fontawesome.com/aea7610254.css" media="all" rel="stylesheet">
+    <!--&lt;!&ndash; Datepciker stylesheet &ndash;&gt;-->
+    <!--<link rel="stylesheet" href="../static/css/datepicker.css" type="text/css" media="all">-->
+    <!--&lt;!&ndash; Swipebox stylesheet &ndash;&gt;-->
+    <link rel="stylesheet" href="../static/css/swipebox.css" type="text/css" media="all">
+    <!-- meanmenu stylesheet -->
+    <link rel="stylesheet" href="../static/css/meanmenu.css" type="text/css" media="all">
+     <!--Include the site main stylesheet-->
+    <link rel="stylesheet" href="../static/css/main.css" type="text/css" media="all">
+    <!-- Include the site responsive  stylesheet -->
+    <link rel="stylesheet" href="../static/css/custom-responsive.css" type="text/css" media="all">
+{% if request.session.identity == "学生" %}
+    <style>
+
+        body {
+            background-color: white;
+        }
+    </style>
+{% endif %}
+
+</head>
+<body>
+<div class="col-md-1"></div>
+<div class="col-md-10">
+    {% include 'nav1.html' %}
+    {% block content %}
+ <div>这里是默认内容，所有继承自这个模板的，如果不覆盖就显示这里的默认内容。</div>
+{% endblock %}
+{#{% include 'footer.html' %}#}
+</div>
+<div class="col-md-1"></div>
+
+
+
+
+<a href="#top" id="scroll-top"></a>
+<script src="/static/js/jquery-1.11.1.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+
+<script type='text/javascript' id='quick-js'></script>
+<script type='text/javascript' src='../static/js/jquery-1.11.1.min.js'></script>
+<script type='text/javascript' src='../static/js/bootstrap.min.js'></script>
+<script type='text/javascript' src='../static/js/jquery.swipebox.min.js'></script>
+<script type='text/javascript' src='../static/js/jquery.appear.js'></script>
+<script type='text/javascript' src='../static/js/jquery.ui.core.min.js'></script>
+<script type='text/javascript' src='../static/js/jquery.validate.min.js'></script>
+<!--<script type='text/javascript' src='../static/js/jquery.form.js'></script>-->
+<!--<script type='text/javascript' src='../static/js/jquery.autosize.min.js'></script>-->
+<script type='text/javascript' src='../static/js/jquery.meanmenu.min.js'></script>
+<!--<script type='text/javascript' src='../static/js/jquery.velocity.min.js'></script>-->
+<!-- <script type='text/javascript' src='../static/js/jquery-twitterFetcher.js'></script> -->
+<script type='text/javascript' src='../static/js/respond.min.js'></script>
+<script type='text/javascript' src='../static/js/jquery-migrate-1.2.1.min.js'></script>
+<script type='text/javascript' src='../static/js/custom.js'></script>
+<script src="https://use.fontawesome.com/aea7610254.js"></script>
+</body>
+</html>

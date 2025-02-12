@@ -1,0 +1,66 @@
+{% extends 'student_index.html' %}
+{% block underLow %}
+    <div class="row" style="background-color: white;">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="row" style="height: 600px">
+                {% for t in race_data %}
+                    <div class="col-md-6">
+                        <div class="panel panel-info" style="width: 500px">
+                            <div class="panel-heading">
+                                {% if t.race_id.type == '学习赛' %}
+                                    <span class="label label-success">学习赛</span>
+                                {% else %}
+                                    <span class="label label-danger">学术研究赛</span>
+                                {% endif %}
+                                <span class="label label-info">时间：<div
+                                        style="display: inline-block;color: #ef6262">{{ t.race_id.begin_time }}</div>
+                                                        &nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;<div
+                                            style="display: inline-block;color: #ef6262">{{ t.race_id.over_time }}</div></span>
+                            {% if t.race_id.over_time < now_time %}
+                                <span class="label label-default">已结束</span>
+                                {% else %}
+                                <span class="label label-warning">进行中</span>
+                            {% endif %}
+                            </div>
+                            <div class="panel-body" style="background-color: aliceblue">
+                                <p>{{ t.race_id.name }}</p>
+                            </div>
+                            <div class="panel-body"
+                                 style="background-color: #cee2ff; display: flex; position: relative; text-align: center;">
+                                <p style="font-size: 17px; font-weight: bold; margin-right: 10px;">
+                                    课程名称：{{ t.race_id.class_id.name }}
+                                </p>
+                                <button class="btn btn-danger"
+                                        style="position: absolute; right: 0; bottom: 0; height: 100%; width: 50%;font-size: 20px;font-weight:bolder"
+                                        onclick="window.location.href ='/student/student_race_detail.html?id={{ t.race_id.id }}'">
+                                    比赛详情
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="pagination-container" style="margin-top: auto; padding-bottom: 20px; text-align: center;">
+            <ul class="pager">
+                    {% if race_data.has_previous %}
+                        <li class="previous"><a href="?page={{ race_data.previous_page_number }}">&larr; 上一页</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a href="#">&larr; 上一页</a>
+                        </li>
+                    {% endif %}
+                    <span>{{ race_data.number }} / {{ race_data.paginator.num_pages }}</span>
+                    {% if race_data.has_next %}
+                        <li class="next"><a href="?page={{ race_data.next_page_number }}">下一页 &rarr;</a></li>
+                    {% else %}
+                        <li class="next disabled"><a href="#">下一页 &rarr;</a></li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+
+{% endblock %}
+

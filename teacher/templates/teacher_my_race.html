@@ -1,0 +1,154 @@
+{% extends 'teacher_index.html' %}
+{% block main %}
+        <div class="row" style="background-color:#f6f6f6;">
+            <div class="card" style="display: flex;">
+                <div class="row">
+                    <div class="col-md-3" style="">
+                        <a href="teacher_index.html" style=""><img src="../static/image/add-one.png"
+                                                                   style="height: 100px"></a>
+                        <h3>发布比赛</h3>
+                    </div>
+                    <div class="col-md-9">
+                        <div style="position: absolute; top: 0; bottom: 0; left: 25%; transform: translateX(-50%); width: 2px; background-color: #ccc;"></div>
+                        <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="container col-md-4">
+                                <label for="selectOption">选择课程：</label>
+                                <select class="form-select" id="selectOption" name="class_id">
+                                    <option value="全部">全部</option>
+                                    {% for t in class %}
+                                        <option {% if class_id == t.id %}selected{% endif %} value="{{ t.id }}">{{ t.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="container col-md-4">
+                                <label for="selectOption">选择竞赛类型：</label>
+                                <select class="form-select" id="selectOption" name="race_type">
+                                    <option {% if race_type == "全部" %}selected{% endif %} value="全部">全部</option>
+                                    <option {% if race_type == "学习赛" %}selected{% endif %} value="学习赛">学习赛</option>
+                                    <option {% if race_type == "学术研究赛" %}selected{% endif %} value="学术研究赛">学术研究赛</option>
+                                </select>
+                            </div>
+                            <div class="container col-md-4">
+                                <label for="selectOption">选择竞赛状态：</label>
+                                <select class="form-select" id="selectOption" name="race_state">
+                                    <option value="全部" {% if race_state == "全部" %}selected{% endif %}>
+                                        全部
+                                    </option>
+                                    <option value="未开始"
+                                            {% if race_state == "未开始" %}selected{% endif %}>未开始
+                                    </option>
+                                    <option value="进行中"
+                                            {% if race_state == "进行中" %}selected{% endif %}>进行中
+                                    </option>
+                                    <option value="已结束"
+                                            {% if race_state == "已结束" %}selected{% endif %}>已结束
+                                    </option>
+                                </select>
+                            </div>
+                            <button name="query_btn" type="submit" class="btn btn-primary" style="width: 30%;margin-left: 200px;margin-top:30px;font-weight: bolder;font-size: 20px;">查询</button>
+                        </div>
+                        </form>
+
+
+
+                    </div>
+                </div>
+
+            </div>
+            {% for t in data %}
+                <div class="card" style="display: flex;text-align: center;">
+                    <div class="col-md-6">
+                        <div class="panel panel-default" style="width: 500px;margin-left: 80px;box-shadow: 5px 5px 10px #888888;">
+                            <div class="panel-heading" style="background-color: #ffffff;">
+                                {% if t.type == '学习赛' %}
+                                    <span class="badge bg-success" style="position: relative;top: -2px;">学习赛</span>
+                                {% else %}
+                                    <span class="badge bg-danger" style="position: relative;top: -2px;">学术研究赛</span>                                {% endif %}
+                                <span class="label label-info">时间：<div
+                                        style="display: inline-block;color: #ef6262">{{ t.begin_time }}</div>
+                                                            &nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;<div
+                                            style="display: inline-block;color: #ef6262">{{ t.over_time }}</div></span>
+                            {% if now_time < t.begin_time %}
+                                <span class="badge bg-primary" style="position: relative;top: -2px;">未开始</span>
+                            {% elif now_time > t.over_time %}
+                                <span class="badge bg-dark" style="position: relative;top: -2px;">已结束</span>
+                            {% else %}
+                                <span class="badge bg-warning" style="position: relative;top: -2px;">进行中</span>
+                            {% endif %}
+                            </div>
+                            <div class="panel-body" style="background-color:#f6f6f6;width: 500px">
+                                <br>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="点击进入比赛" href = "teacher_race_detail.html?id={{ t.id }}" STYLE="font-weight: bold;text-decoration:underline;margin-bottom: 20px;font-size: 25px;text-align: center">{{ t.name }}</a>
+                                <br><br>
+                            </div>
+                            <div class="panel-body"
+                                 style="background-color: #ffffff; display: flex; position: relative;">
+                                <p style="font-size: 15px;color: #2b542c; margin-right: 10px;">
+                                    课程：{{t.class_id.name}}
+                                </p>
+                                <button class="btn btn-success"
+                                        style="position: absolute; right: 20%; bottom: 0; height: 100%; width: 20%;font-size: 17px;font-weight:bolder"
+                                        onclick="window.location.href ='teacher_change_race.html?id={{ t.id }}'">修改比赛
+                                </button>
+                                <button class="btn btn-danger"
+                                        style="position: absolute; right: 0; bottom: 0; height: 100%; width: 20%;font-size: 17px;font-weight:bolder"
+                                        data-bs-toggle="modal" data-bs-target="#myModal"
+                                        onclick="delete_race.value='确定要删除比赛‘{{t.name}}’吗';race_id.value={{ t.id }}">删除比赛
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <ul class="pagination pagination-lg justify-content-center ">
+                {% if data.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ data.previous_page_number }}">&larr;
+                        上一页</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">&larr; 上一页</a>
+                    </li>
+                {% endif %}&nbsp;&nbsp;&nbsp;
+                <h3 style="margin-top:10px">{{ data.number }} / {{ data.paginator.num_pages }}</h3>
+                &nbsp;&nbsp;&nbsp;
+                {% if data.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ data.next_page_number }}">下一页
+                        &rarr;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">下一页 &rarr;</a></li>
+                {% endif %}
+
+            </ul>
+        </div>
+        <!--删除比赛(modal)-->
+        <form action="" method="post" enctype="multipart/form-data">
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                {% csrf_token %}
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">删除比赛</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <input type="hidden" name="race_id" id="race_id">
+                        <textarea readonly class="modal-body" type="" name="delete_race" id="delete_race"
+                                  style="color: red;font-size: 20px; resize: none;border: none;width: auto;height: auto;overflow: hidden "></textarea>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                            <button type="submit" class="btn btn-primary" name="delete_btn">提交更改</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+
+            </div>
+        </form>
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'teacher_index.html' %}
+{% block main %}
+    <div class="row" style="background-color: #f6f6f6;height: 1000px">
+    <div style="height: 10px"></div>
+        <div class="col-md-4"><img src="../static/image/head_photo.jpg" class="rounded-circle" alt="头像" style="height: 300px;width: auto"></div>
+        <div class="col-md-4">
+            {% if notice == '1' %}
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>错误!</strong> 原密码不正确
+                </div>
+        {% endif %}
+            {% if notice == '2' %}
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>错误!</strong> 新密码不能与原密码相同
+                </div>
+        {% endif %}
+            {% if notice == '3' %}
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>成功!</strong> 成功修改了密码
+                </div>
+        {% endif %}
+            {% if notice == '4' %}
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>错误!</strong> 请勿提交空内容
+                </div>
+            {% endif %}
+            {% if notice == '5' %}
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>错误!</strong> 两次密码不一致
+                </div>
+            {% endif %}
+            <div class="row" style="background-color: white">
+                    <h3>个人信息</h3>
+                    <table class="table" style="font-size: larger">
+                        <tr>
+                            <th>姓名</th>
+                            <td>{{data.name}}</td>
+                        </tr>
+                        <tr>
+                            <th>账号</th>
+                            <td>{{ data.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>密码</th>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#change_question">
+                                    修改密码
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+        </div>
+        <div class="col-md-4"></div>
+
+    </div>
+<form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="change_question" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+                </div>
+
+                <div class="form-group" style="padding: 10px;">
+                    <label>原密码</label>
+                    <input type="password" class="form-control" placeholder="输入原密码" style="height: 50px"
+                           name="old_password" >
+                    <label>新密码</label>
+                    <input type="password" class="form-control" placeholder="输入新密码" style="height: 50px"
+                           name="new_password" id ="new_password">
+                    <label>确认新密码</label>
+                    <input type="password" class="form-control" placeholder="确认新密码" style="height: 50px"
+                           name="repeat_password" id ="repeat_password">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary" name="change_btn">提交更改</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+</form>
+    </div>
+
+
+            
+{% endblock %}

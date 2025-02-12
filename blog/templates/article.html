@@ -1,0 +1,157 @@
+{% extends request.session.is_student|yesno:"master.html,masterTeacher.html" %}
+{% block content %}
+<!--[if lt IE 7]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="<php echo 'http://www.google.com/chromeframe/?redirect=true'; ?>">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+    <div class="blog-page clearfix">
+    <div class="container">
+    <div class="row">
+    <div class="col-lg-9 col-md-8">
+    <div class="blog-post-single clearfix">
+    
+    <div class="row">
+    <div class="col-sm-2">
+    
+    
+    
+    
+        <div class="left_meta clearfix entry-meta">
+            <time class="entry-time updated" datetime="2014-05-10T11:07:36+00:00">{{article.pub_time|date:"F"}}<strong>{{article.pub_time|date:"d"}}</strong></time>
+            <span class="comments_count clearfix entry-comments-link">
+                    <p>阅读数  {{article.view_times}}</p>
+            </span>
+        </div>
+    </div>
+    <div class="col-sm-10">
+        <article class="post format-gallery hentry clearfix">
+            <div class="right-contents">
+                <header class="entry-header">
+
+    
+                    <h1 class="entry-title">{{article.title}}</h1>
+                       <span class="entry-author">
+                            {{article.expert.name}}
+                       </span>
+                </header>
+    
+                <div class="entry-content">
+                        {{article.content|safe}}
+                </div>
+            </div>
+        </article>
+    
+        <div class="comments-wrapper">
+    
+    
+            <!-- start of comments section -->
+            <div id="comments-section">
+                
+                <ol id="comments" class="commentlist">
+                {% for item in comment %}
+                    <li class="comment">
+                        <article >
+
+
+                            <div class="comment-wrap clearfix">
+                                <div class="comment-detail-wrap" >
+                                    <div class="comment-meta">
+                                        <time datetime="2014-05-10T11:07:36+00:00">
+                                            <span style="color: black">{{ item.user.username }}</span>
+                                            {{item.time|date:"Y-m-d H:i:s"}}
+                                        </time>
+                                    </div>
+                                    <div class="comment-body entry-content" style=" border-bottom: 1px solid #ccc;">
+                                        <p>{{item.content}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <!-- end of comment -->
+                    </li>
+                {% endfor %}
+
+                 <div class='pagination'>
+                    {% if comment.num_pages != 1 %}
+                    Page {{ comment.number }} of {{ comment.paginator.num_pages }}
+                   
+
+                     {% if comment.has_previous %}
+                        <a href="?id={{request.GET.id}}&page={{ comment.previous_page_number }}"></a>
+                    {% endif %}
+                    {% for pg in comment.paginator.page_range %}
+                        {% if comment.number == pg %}
+                            <span class='page-numbers current'>{{pg}}</span>
+                        {% else %}
+                            <a class='page-numbers' href='?id={{request.GET.id}}&page={{pg}}'>{{pg}}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if articles.has_next %}
+                        <a class="next page-numbers" href="?id={{request.GET.id}}&page={{ comment.next_page_number }}"> > </a>
+                    {% endif %}
+                     {% endif %}
+                </div>
+
+            
+
+                </ol>
+                <div id="respond" class="comment-respond">
+                    <h3 id="reply-title" class="comment-reply-title">评论</h3>
+                    <form action="#" method="post" id="commentform" class="comment-form">
+                    {% csrf_token %}
+                        <p class="comment-form-comment">
+                            <textarea id="comment" name="comment" cols="45" rows="5" aria-required="true"></textarea>
+                        </p>
+                        </p>
+                        <p class="form-submit">
+                            <input name="submit" type="submit" id="submit" value="评论" />
+                        </p>
+                    </form>
+                </div><!-- #respond -->
+
+    
+            </div>
+            <!-- end of comments -->
+    
+        </div>
+    
+    
+    </div>
+    </div>
+    
+    </div>
+    
+    
+    
+    </div>
+    
+    <div class="col-lg-3 col-md-4">
+        <aside class="sidebar clearfix">
+ 
+                <div id="search" class="widget clearfix">
+                        <form method="get" id="search-form" class="search-form" action="/blog/search.html">
+                            <div>
+                                <input type="text" value="" name="q" id="search-text" placeholder="搜索">
+                            </div>
+                        </form>
+                </div>
+
+            <div class="expert">
+                <div class="expert-pic">
+                        <img src="/static/image/user.png" width="80px">
+                    </div>
+
+                    <div class="expert-discription">
+                        <h5>{{article.user.name}}</h5>
+                        <p>发布者</p>
+                    </div>
+            </div>   
+            <div style="height:20px"></div>
+
+            </aside>
+    </div>
+    
+    </div>
+    </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'student_index.html' %}
+{% block main %}
+    <div class="row">
+    {% for t in data %}
+        <div class="col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading" style="font-weight: bolder;text-align: center;font-size: larger">{{ t.class_id.name }}</div>
+                <table class="table">
+                    <tr>
+                        <th>课程编号</th>
+                        <td>{{ t.class_id.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>课程简介</th>
+                        <td>{{ t.class_id.brief }}</td>
+                    </tr>
+                    <tr>
+                        <th>上课时间</th>
+                        <td>{{ t.class_id.class_time }}</td>
+                    </tr>
+                    <tr>
+                        <th>上课地点</th>
+                        <td>{{ t.class_id.address }}</td>
+                    </tr>
+                    <tr>
+                        <th>授课教师</th>
+                        <td>{{ t.class_id.teacher_id.name }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+
+
+
+    </div>
+{% endblock %}

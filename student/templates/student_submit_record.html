@@ -1,0 +1,158 @@
+
+{% extends 'student_index.html' %}
+{% block main %}
+    <div class="row">
+        <form id="my-form" action="/student/student_race_detail.html" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="race_id" value="{{ id }}">
+        </form>
+        <div class="jumbotron">
+            <div class="container" >
+                <div class="col-md-8"><h3>【{{race_data.type}}】{{race_data.name}}</h3>
+                    <div style="height: 30px"></div>
+                    <span style="color: gray">开始时间&nbsp;&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.begin_time }}&nbsp;&nbsp;</span>
+                    <span style="color: gray">结束时间&nbsp;&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.over_time }}&nbsp;&nbsp;</span>
+                    <span style="color: gray">状态&nbsp;&nbsp;</span>
+                    {% if now_time > race_data.over_time %}
+                        <span style="font-size: 17px">已结束&nbsp;&nbsp;</span><br><br>
+                    {% elif now_time < race_data.begin_time %}
+                        <span style="font-size: 17px" >未开始&nbsp;&nbsp;</span><br><br>
+                    {% else %}
+                        <span style="font-size: 17px">进行中&nbsp;&nbsp;</span><br><br>
+                    {% endif %}
+                    <span style="color: gray">发起人&nbsp;&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.teacher_id.name }}&nbsp;&nbsp;</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span style="color: gray">课程名称&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.class_id.name }}&nbsp;&nbsp;</span>
+                    <br><br>
+                    {% if now_time > race_data.over_time %}
+                    <button type="button" class="btn btn-primary btn-lg"
+                                style="width: 200px;height: 50px" disabled="disabled">已结束
+                        </button>
+                    {% elif now_time < race_data.begin_time %}
+                    <button type="button" class="btn btn-warning"
+                                style="width: 200px;height: 50px" disabled="disabled">未开始
+                        </button>
+                    {% else %}
+                        {% if id in join_race_id %}
+                                <button type="button" class="btn btn-success" disabled="disabled"
+                                        style="width: 200px;height: 50px">已参加
+                                </button>
+                        {% else %}
+                                <button type="button" class="btn btn-danger"
+                                        style="width: 200px;height: 50px" id="submit-btn">参加比赛
+                                </button>
+                        {% endif %}
+                {% endif %}
+                </div>
+                <div class="col-md-4"><img
+                        src="../static/image/student_race_detail.jpg"
+                        alt="Student Race Detail"
+                        style="width: 90%;height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" >
+        <div class="col-md-3" style="height: 2000px;background-color: white;width: auto">
+            <div class="row">
+                <ul class="nav nav-pills nav-stacked" style=" white-space: nowrap;">
+                    <li><a href="/student/student_race_detail.html?id={{ request.session.race_id }}">赛题与数据</a></li>
+                    <li><a href="/student/student_race_detail.html?id={{ request.session.race_id }}&rank=1">排行榜</a></li>
+                    <li><a href="/student/student_submit_record.html">提交记录</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-1" style="background-color: white;height: 2000px"></div>
+        <div class="col-md-8" style="background-color: white;height: 2000px">
+            <div class="row">
+                <div class="row">
+                    <br>
+    <div class="col-md-4"><span style="color: #e51c3a">{{ notice }}</span></div>
+    <div class="col-md-8">
+        <form method="post" enctype="multipart/form-data" style="display: inline-block">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" name="all_submit" style="font-size: large">查询全部提交记录
+            </button>
+            <button type="submit" class="btn btn-primary" name="score" style="font-size: large">查询所有比赛最高得分
+            </button>
+        </form>
+    </div>
+    </div>
+
+
+    {% if flag == 0 %}
+    <table class="table table-striped" style="background-color: white">
+        <thead>
+        <tr>
+            <th>课程名称</th>
+            <th>比赛名称</th>
+            <th>得分</th>
+            <th>提交时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for t in record %}
+        <tr>
+            <td>{{ t.class_id.name }}</td>
+            <td>{{ t.race_id.name }}</td>
+            <td>{{ t.right_rate }}  ({{ t.race_id.evaluate_type }})</td>
+            <td>{{ t.time|date:"Y-m-d H:i:s" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <table class="table table-striped" style="background-color: white">
+        <thead>
+        <tr>
+            <th>课程名称</th>
+            <th>比赛名称</th>
+            <th>最高得分</th>
+            <th>时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for t in record %}
+            <tr>
+                <td>{{ t.race_id.class_id.name }}</td>
+                <td>{{ t.race_id.name }}</td>
+                <td>{{ t.score }} ({{ t.race_id.evaluate_type }})</td>
+                <td>{{ t.time}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% endif %}
+    <ul class="pager">
+        {% if record.has_previous %}
+            <li class="previous"><a href="?{{ pageName }}={{ record.previous_page_number }}">&larr; 上一页</a></li>
+        {% else %}
+            <li class="previous disabled"><a href="#">&larr; 上一页</a>
+            </li>
+        {% endif %}
+        <span>{{ record.number }} / {{ record.paginator.num_pages }}</span>
+        {% if record.has_next %}
+            <li class="next"><a href="?{{ pageName }}={{ record.next_page_number }}">下一页 &rarr;</a></li>
+        {% else %}
+            <li class="next disabled"><a href="#">下一页 &rarr;</a></li>
+        {% endif %}
+
+    </ul>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        var form = document.getElementById('my-form');
+        var submitBtn = document.getElementById('submit-btn');
+
+        submitBtn.addEventListener('click', function () {
+            form.submit();
+        });
+    </script>
+{% endblock %}

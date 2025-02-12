@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>数据竞赛</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<div class="col-md-1"></div>
+<div class="col-md-10" style="font-size: 20px;font-weight:500;">
+    <div class="row" >
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand"  href="/student/student_index.html"
+                       style="font-size: 25px;">数据竞赛</a>
+                </div>
+                <div>
+                    <ul class="nav navbar-nav">
+                        <li><a href="/student/student_race.html">竞赛训练</a></li>
+                        <li><a href="/student/student_dataAnalysis.html">竞赛分析</a></li>
+                        <li><a href="/blog/index.html">知识分享</a></li>
+                        <li><a href="/blog/dataShare.html?allpage=1">数据资源</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-user"></span> {{request.session.username}} <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" style="font-size: large">
+                        <li><a href="/student/student_homepage.html">个人主页</a></li>
+                        <li><a href="/blog/expert.html">值班人员</a></li>
+                        <li><a href="/logout">退出登录</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+
+                </div>
+            </div>
+        </nav>
+    </div>
+    {% block main %}
+        <style>
+/* Custom Styles */
+    ul.nav-tabs{
+        width: 160px;
+        margin-top: 20px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+    }
+    ul.nav-tabs li{
+        margin: 0;
+        border-top: 1px solid #ddd;
+    }
+    ul.nav-tabs li:first-child{
+        border-top: none;
+    }
+    ul.nav-tabs li a{
+        margin: 0;
+        padding: 8px 16px;
+        border-radius: 0;
+    }
+    ul.nav-tabs li.active a, ul.nav-tabs li.active a:hover{
+        color: #fff;
+        background: #0088cc;
+        border: 1px solid #0088cc;
+    }
+    ul.nav-tabs li:first-child a{
+        border-radius: 4px 4px 0 0;
+    }
+    ul.nav-tabs li:last-child a{
+        border-radius: 0 0 4px 4px;
+    }
+    ul.nav-tabs.affix{
+        top: 30px; /* Set the top position of pinned element */
+    }
+</style>
+<script>
+$(document).ready(function(){
+    $("#myNav").affix({
+        offset: {
+            top: 125
+      }
+    });
+});
+</script>
+        <body data-spy="scroll" data-target="#myScrollspy" >
+<body>
+   <div id="myCarousel" class="carousel slide">
+	<!-- 轮播（Carousel）指标 -->
+	<ol class="carousel-indicators">
+		<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+		<li data-target="#myCarousel" data-slide-to="1"></li>
+		<li data-target="#myCarousel" data-slide-to="2"></li>
+	</ol>
+	<!-- 轮播（Carousel）项目 -->
+	<div class="carousel-inner" style="height: 400px;width: auto; margin-left: 20%">
+		<div class="item active">
+			<img src="../static/image/index2.png" alt="First slide">
+		</div>
+		<div class="item">
+			<img src="../static/image/index1.png" alt="Second slide">
+		</div>
+		<div class="item">
+			<img src="../static/image/index3.png" alt="Third slide">
+		</div>
+	</div>
+	<!-- 轮播（Carousel）导航 -->
+	<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+	    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+	    <span class="sr-only">Previous</span>
+	</a>
+	<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+	    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+	    <span class="sr-only">Next</span>
+	</a>
+</div>
+    <div class="row" style="background-color: white;height: 2000px">
+        <div class="col-xs-3" id="myScrollspy">
+            <ul class="nav nav-tabs nav-stacked" id="myNav">
+                <li class="active"><a href="#section-1">萌芽期</a></li>
+                <li><a href="#section-2">连接主义复兴</a></li>
+                <li><a href="#section-3">机器学习复苏</a></li>
+                <li><a href="#section-4">深度学习盛行</a></li>
+                <li><a href="#section-5">未来展望</a></li>
+            </ul>
+        </div>
+        <div class="col-xs-9">
+            <h2 id="section-1">萌芽期</h2>
+<p>20世纪50年代初期，机器学习的早期思想开始形成，由计算机科学家Alan Turing的工作启发。他提出了“模仿游戏”的概念，探讨了机器是否能够模仿人类智能。这可以看作机器学习和人工智能的雏形。然而，那个时代的计算能力非常有限，导致了机器学习的发展受到了限制。
+
+符号主义占主导地位，主要关注基于规则的推理和专家系统的开发。在这个时期，Dartmouth会议是机器学习的重要事件，专家系统如Dendral和Mycin成为焦点。这一时期对于机器学习的基本思想和符号表示产生了重要影响。
+
+            </p>
+            <hr>
+            <h2 id="section-2">连接主义复兴</h2>
+            <p>1980年代，机器学习经历了一次复兴。连接主义变得流行，神经网络再次引起广泛关注。这是由于研究者如David Rumelhart和James McClelland的工作，以及神经网络中的Hopfield网络和反向传播算法的引入。
+
+1986年，Rumelhart等人的著作《并行分布式处理》进一步推动了神经网络的研究。这个时期还涌现出了支持向量机（SVM）等传统机器学习方法。尽管连接主义和符号主义之间存在激烈的争论，但这个时代为机器学习奠定了坚实的基础。
+</p>
+            <hr>
+            <h2 id="section-3">机器学习复苏</h2>
+<p>2000年后，机器学习经历了巨大的复兴。这一次的崛起主要得益于计算能力的飞速提升和大规模数据的可用性。机器学习算法和模型开始在各种领域取得显著成就。传统机器学习方法如决策树、随机森林和支持向量机仍然非常重要，但深度学习也开始发挥关键作用。
+
+大数据技术的兴起使数据处理和分析变得更加容易。同时，云计算和分布式计算架构推动了大规模机器学习的发展，因此企业和研究机构能够处理庞大的数据集和模型。
+</p>
+            <hr>
+            <h2 id="section-4">深度学习盛行</h2>
+<p>2010年代标志着机器学习的黄金时代。深度学习重新引领了潮流，主要因为大规模数据集和高性能硬件的可用性。卷积神经网络（CNN）和循环神经网络（RNN）等深度学习架构在计算机视觉、自然语言处理和语音识别等领域取得了突破性进展。
+
+深度学习不仅提高了模型的性能，还带来了许多应用，如智能助手、自动驾驶汽车和医疗诊断。同时，大数据的分析和挖掘变得更加精确，从而改善了商业决策和消费者体验。
+</p>
+            <hr>
+            <h2 id="section-5">未来展望</h2>
+<p>机器学习领域仍在不断发展，未来充满了机会和挑战。机器学习可能将扩展到更广泛的领域，如自动驾驶汽车、医疗诊断、机器人技术和环境监测。可解释性人工智能（XAI）变得越来越重要，以确保算法的透明性和公平性。
+
+新技术的出现可能推动机器学习的发展，包括量子计算、增强学习和自然语言处理的进一步改进。同时，伦理问题、隐私和安全性问题也需要持续关注和解决。
+</p>        </div>
+    </div>
+</body>
+</body>
+    {% endblock %}
+</div>
+<div class="col-md-1"></div>
+</body>
+</html>

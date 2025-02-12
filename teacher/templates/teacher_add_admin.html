@@ -1,0 +1,88 @@
+{% extends 'teacher_index.html' %}
+{% block main %}
+    <div class="row" style="background-color: #f6f6f6">
+    {% if notice %}
+        <div class="alert alert-info alert-dismissible fade show">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <strong>提示!</strong> {{ notice }}
+        </div>
+        {% else %}
+        <div style="height: 50px"></div>
+        {% endif %}
+        <div style="display: flex; align-items: center;">
+            <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#add_question"
+                    style="width: 15%;">
+                添加教师
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+            <div class="input-group input-group-lg mb-3" style="margin-left: 10px;margin-top: 15px">
+                <input id="stu_name" type="text" class="form-control" name="stu_name" placeholder="请输入学生账号或姓名">
+                <button type="submit" class="btn btn-primary" name ="query_btn">查询学生信息</button>
+            </div>
+
+            </form>
+        </div>
+        {% if student_data %}
+            <table class="table table-bordered" style="background-color: white">
+                <thead>
+                <tr>
+                    <th>学生编号</th>
+                    <th>用户名</th>
+                    <th>姓名</th>
+                    <th>参与的比赛数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for t in student_data %}
+                    <tr>
+                        <td>{{ t.id }}</td>
+                        <td>{{ t.username }}</td>
+                        <td>{{ t.name }}</td>
+                        <td>{{ t.b }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+    {% endif %}
+
+    </div>
+    <form role="form" method="post" enctype="multipart/form-data">
+        <div class="modal fade" id="add_question" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            {% csrf_token %}
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">添加教师</h4>
+                    </div>
+
+                    <div class="form-group" style="padding: 10px;">
+                        <span style="font-weight: bolder;font-size: 25px">姓名</span>
+                        <input type="text" class="form-control" placeholder="请输入姓名" style="height: 40px"
+                               name="add_name">
+                        <br>
+                        <input type="hidden" id="add_class_id" name="add_class_id">
+                        <span style="font-weight: bolder;font-size: 25px">账号</span>
+                        <input type="text" class="form-control" placeholder="请输入账号" style="height: 40px"
+                               name="add_username">
+                        <br>
+                        <span style="font-weight: bolder;font-size: 25px">密码</span>&nbsp;&nbsp;<span
+                            style="color: #928d8d">必填</span>
+                        <input type="text" class="form-control" placeholder="请输入密码" style="height: 40px"
+                               name="add_password">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary" name="add_btn">提交更改</button>
+                    </div>
+
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+    </form>
+{% endblock %}

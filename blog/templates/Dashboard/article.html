@@ -1,0 +1,91 @@
+{% extends 'Dashboard/master.html' %}
+
+{% block content %}
+<div class="row">
+
+    <div class="col-md-6">
+        <h1>文章列表</h1>
+    </div>
+     <div class="col-md-4">
+         <h1><button type="button" class="btn btn-danger" style="float:right" onclick="window.location.href='article2.html'">新增文章</button></h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-10">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>封面</th>
+          <th>标题</th>
+          <th>类别</th>
+          <th>标签</th>
+          <th>作者</th>
+          <th>日期</th>
+          <th>摘要</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for t in articles %}
+        <tr>
+          <td><img src="../media/article/{{t.img}}" class="img-rounded" height="50px"></td>
+          <td>{{t.title}}</td>
+          <td>{{t.category}}</td>
+          <td>{{t.tags}}</td>
+            <td>{{t.user.name}}</td>
+          <td>{{t.pub_time|date:"Y-m-d"}}</td>
+           <td><textarea class="form-control" rows="3"  style="background-color: white" readonly>{{t.summary}}</textarea></td>
+           <td><button type="button" class="btn btn-primary" onclick="window.location.href='article2.html?id={{t.id}}'">修改</button>
+           <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#myModal" onclick="expertId.value={{t.id}}">删除</button></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <ul class="pagination pagination-lg justify-content-center ">
+                {% if articles.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ articles.previous_page_number }}">&larr;
+                        上一页</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">&larr; 上一页</a>
+                    </li>
+                {% endif %}&nbsp;&nbsp;&nbsp;
+                <h3 style="margin-top:10px">{{ articles.number }} / {{ articles.paginator.num_pages }}</h3>
+                &nbsp;&nbsp;&nbsp;
+                {% if articles.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ articles.next_page_number }}">下一页
+                        &rarr;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">下一页 &rarr;</a></li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </div>
+
+ <form enctype="multipart/form-data" role="form" method="post" action="">
+     {% csrf_token  %}
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">删除确认</h4>
+            </div>
+            <div class="modal-body">确定要删除吗？
+                <input style="display: none" name="id" id="expertId" value="">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                <button type="submit" name="delete" class="btn btn-primary">提交更改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</form>
+<script>
+    $("#article").attr("class","active")
+</script>
+
+   
+
+
+{% endblock %}

@@ -1,0 +1,793 @@
+{% extends request.session.is_student|yesno:"student_index.html,masterTeacher.html" %}
+{% block main %}
+    <style>
+        .btn{
+            font-size: large;
+        }
+    </style>
+    <div class="row">
+    {% if notice %}
+<div class="alert alert-info alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+    {{ notice }}
+        </div>
+        {% endif %}
+    <div class="row" style="margin-left: 5px">
+
+        <form method="post" enctype="multipart/form-data" style="display: inline-block;">
+            {% csrf_token %}
+            <button class="btn btn-primary"  name="mydata">我发布的</button>
+            <button class="btn btn-primary"  name="buydata">我购买的</button>
+            <button class="btn btn-primary"  name="alldata">全部数据</button>
+
+        </form>
+
+
+
+
+</div>
+
+
+    </div>
+    <div class="row">
+    {% if alldata %}
+        <form enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <div class="input-group input-group-lg" style=" margin-top: 10px;margin-right: 10px; display: flex;">
+                <input id="stu_name" style="width: 600px" type="text" class="form-control" name="dataname" placeholder="请输入要查询的数据名">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary" style="margin-top: 3px;margin-left: 10px" name="query_btn">查询数据</button>
+                </div>
+            </div>
+        </form>
+        <table class="table table-striped">
+  <caption><span>当前拥有的积分：{{ user.points }}</span>
+</caption>
+  <thead>
+    <tr>
+      <th width="40%">数据简介</th>
+      <th>下载次数</th>
+      <th>所需积分</th>
+      <th>发布者</th>
+      <th>发布时间</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in alldata %}
+    <tr>
+      <td>{{t.brief}}</td>
+      <td>{{ t.downloadTimes }}</td>
+      <td>{{ t.points }}</td>
+
+        <td>{% if user.id != t.user.id %}
+            {{ t.user.name }}
+            {% else %}
+            <div style="color: #026102">{{ t.user.name }}</div>
+            {% endif %}
+        </td>
+        <td>{{ t.time |date:"Y-m-d H:i:s" }}</td>
+      <td>{% if user.id != t.user.id %}
+            {% if t.id not in buyList %}
+          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#buyData1" onclick="tip1.value='确定花费{{ t.points }}积分购买该数据吗';
+              buyer.value='{{ user.id }}';seller.value='{{ t.user.id }}';shareDataId.value='{{ t.id }}'">购买数据</button>
+                {% else %}
+                          <button type="button" class="btn btn-success" onclick="window.location.href='../../media/dataShare/{{ t.file_name }}'">下载数据</button>
+                {% endif %}
+          {% else %}
+          <button type="button" class="btn btn-success" onclick="window.location.href='../../media/dataShare/{{ t.file_name }}'">下载数据</button>
+          {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+                            <ul class="pager">
+                    {% if alldata.has_previous %}
+                        <li class="previous"><a href="?allpage={{ alldata.previous_page_number }}">&larr; 上一页</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a href="#">&larr; 上一页</a>
+                        </li>
+                    {% endif %}
+                    <span>{{ alldata.number }} / {{ alldata.paginator.num_pages }}</span>
+                    {% if alldata.has_next %}
+                        <li class="next"><a href="?allpage={{ alldata.next_page_number }}">下一页 &rarr;</a></li>
+                    {% else %}
+                        <li class="next disabled"><a href="#">下一页 &rarr;</a></li>
+                    {% endif %}
+
+                </ul>
+
+    {% elif mydata or flag%}
+        <br>
+        <button class="btn btn-danger" style="margin-left: 5px;" data-toggle="modal" data-target="#updata" >发布数据</button>
+        {% if flag %}
+            <h1>当前还没有数据，快去发布吧！</h1>
+            {% else %}
+            <table class="table table-striped">
+  <caption><span>当前拥有的积分：{{ user.points }}</span>
+</caption>
+
+
+
+
+  <thead>
+    <tr>
+      <th width="40%">数据简介</th>
+      <th>下载次数</th>
+      <th>所需积分</th>
+      <th>发布者</th>
+      <th>发布时间</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in mydata %}
+    <tr>
+      <td>{{t.brief}}</td>
+      <td>{{ t.downloadTimes }}</td>
+      <td>{{ t.points }}</td>
+
+        <td>{{ t.user.name }}
+        </td>
+        <td>{{ t.time |date:"Y-m-d H:i:s" }}</td>
+      <td>
+          <button type="button" class="btn btn-success" onclick="window.location.href='../../media/dataShare/{{ t.file_name }}'">下载数据</button>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changeData"
+                  onclick="brief.value='{{ t.brief }}';points.value='{{ t.points }}';dataId.value='{{ t.id }}'">修改数据</button>
+          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delData" onclick="dataId1.value='{{ t.id }}'" >删除数据</button>
+      </td>
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+             {% endif %}
+                                    <ul class="pager">
+                    {% if mydata.has_previous %}
+                        <li class="previous"><a href="?mypage={{ mydata.previous_page_number }}">&larr; 上一页</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a href="#">&larr; 上一页</a>
+                        </li>
+                    {% endif %}
+                    <span>{{ mydata.number }} / {{ mydata.paginator.num_pages }}</span>
+                    {% if mydata.has_next %}
+                        <li class="next"><a href="?mypage={{ mydata.next_page_number }}">下一页 &rarr;</a></li>
+                    {% else %}
+                        <li class="next disabled"><a href="#">下一页 &rarr;</a></li>
+                    {% endif %}
+
+                </ul>
+
+    {% elif buydata %}
+        <br>
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+                            <button class="btn btn-danger" type="submit" style="margin-left: 5px" name="buyrecord">购买记录</button>
+        </form>
+            <table class="table table-striped">
+  <caption><span>当前拥有的积分：{{ user.points }}</span>
+</caption>
+  <thead>
+    <tr>
+      <th width="40%">数据简介</th>
+      <th>下载次数</th>
+      <th>所需积分</th>
+      <th>发布者</th>
+      <th>发布时间</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in buydata %}
+    <tr>
+      <td>{{t.data.brief}}</td>
+      <td>{{ t.data.downloadTimes }}</td>
+      <td>{{ t.data.points }}</td>
+
+        <td>{{ t.data.user.name }}
+        </td>
+        <td>{{ t.data.time |date:"Y-m-d H:i:s" }}</td>
+      <td>
+          <button type="button" class="btn btn-success" onclick="window.location.href='../../media/dataShare/{{ t.data.file_name }}'">下载数据</button>
+      </td>
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+                                    <ul class="pager">
+                    {% if buydata.has_previous %}
+                        <li class="previous"><a href="?buypage={{ buydata.previous_page_number }}">&larr; 上一页</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a href="#">&larr; 上一页</a>
+                        </li>
+                    {% endif %}
+                    <span>{{ buydata.number }} / {{ buydata.paginator.num_pages }}</span>
+                    {% if buydata.has_next %}
+                        <li class="next"><a href="?buypage={{ buydata.next_page_number }}">下一页 &rarr;</a></li>
+                    {% else %}
+                        <li class="next disabled"><a href="#">下一页 &rarr;</a></li>
+                    {% endif %}
+
+                </ul>
+
+    {% elif buyrecord %}
+        <br>
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+                            <button class="btn btn-danger" type="submit" style="margin-left: 5px" name="buyrecord">购买记录</button>
+        </form>
+                    <table class="table table-striped">
+  <caption><span>当前拥有的积分：{{ user.points }}</span>
+</caption>
+  <thead>
+    <tr>
+      <th width="40%">数据简介</th>
+      <th>下载次数</th>
+      <th>所需积分</th>
+      <th>发布者</th>
+      <th>发布时间</th>
+      <th>购买时间</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in buyrecord %}
+    <tr>
+      <td>{{t.data.brief}}</td>
+      <td>{{ t.data.downloadTimes }}</td>
+      <td>{{ t.data.points }}</td>
+
+        <td>{{ t.data.user.name }}
+        </td>
+        <td>{{ t.data.time |date:"Y-m-d H:i:s" }}</td>
+        <td>{{ t.time |date:"Y-m-d H:i:s" }}</td>
+
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+<ul class="pager">
+                    {% if buyrecord.has_previous %}
+                        <li class="previous"><a href="?buyrecordpage={{ buyrecord.previous_page_number }}">&larr; 上一页</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a href="#">&larr; 上一页</a>
+                        </li>
+                    {% endif %}
+                    <span>{{ buyrecord.number }} / {{ buyrecord.paginator.num_pages }}</span>
+                    {% if buyrecord.has_next %}
+                        <li class="next"><a href="?buyrecordpage={{ buyrecord.next_page_number }}">下一页 &rarr;</a></li>
+                    {% else %}
+                        <li class="next disabled"><a href="#">下一页 &rarr;</a></li>
+                    {% endif %}
+
+                </ul>
+    {% endif %}
+    </div>
+    <form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="updata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">发布数据</h4>
+                </div>
+
+                <div class="form-group" style="padding: 10px;">
+                    <h3>简介</h3>
+                    <input  class="form-control" placeholder="请输入20字以内的数据简介" style="height: 50px"
+                            name="brief"  required>
+                    <h3 title="文件后缀必须为zip">文件</h3>
+                    <input type="file" title="文件后缀必须为zip" accept=".zip" name="filedata" required>
+                    <h3>积分</h3>
+                    <input type="number" placeholder="下载该文件消耗的积分" name="points" style="width: 400px" min="0" max="999999" required>
+                </div>
+
+                <input type="hidden" name="student_id" value="{{user.id}}">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-warning" name="updata">发布数据</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+        <form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="changeData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">修改数据</h4>
+                </div>
+                    <input type="hidden" id="dataId" name="dataId" value="" >
+                <div class="form-group" style="padding: 10px;">
+                    <h3>简介</h3>
+                    <input  class="form-control" placeholder="请输入20字以内的数据简介" style="height: 50px"
+                            name="brief" id="brief" required>
+                    <h3 title="文件后缀必须为zip">文件</h3><span style="color: red">需要修改则重新上传</span>
+                    <input type="file" title="文件后缀必须为zip" accept=".zip" name="filedata">
+                    <h3>积分</h3>
+                    <input type="number" placeholder="下载该文件消耗的积分" name="points" id="points" style="width: 400px"  min="0" max="999999" required>
+                </div>
+
+                <input type="hidden" name="student_id" value="{{user.id}}">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-warning" name="changeData">修改数据</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+<form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="delData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">删除数据</h4>
+                </div>
+                    <input type="hidden" id="dataId1" name="dataId" value="" >
+                <div class="form-group" style="padding: 10px;">
+                    <p style="color: red">确定删除该数据吗？</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-danger" name="delData">删除数据</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+    <form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="buyData1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">购买数据</h4>
+                </div>
+                    <input type="hidden" id="buyer" name="buyer" value="" >
+                    <input type="hidden" id="seller" name="seller" value="" >
+                    <input type="hidden" id="shareDataId" name="shareDataId" value="" >
+                <div class="form-group" style="padding: 10px;">
+                    <textarea style="color: red;width: 300px;" id="tip1" ></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-danger" name="purchaseData">购买数据</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+
+{% endblock %}
+{% block content %}
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <div class="row">
+    {% if notice %}
+<div class="alert alert-info alert-dismissible">
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    {{notice}}
+  </div>
+        {% endif %}
+    <div class="row" style="margin-left: 5px;margin-top: 20px">
+
+<h4>当前拥有的积分：{{ user.points }}</h4>
+        <form method="post" enctype="multipart/form-data" style="display: inline-block;">
+            {% csrf_token %}
+            <button class="btn btn-primary"  name="mydata">我发布的</button>
+            <button class="btn btn-primary"  name="buydata">我购买的</button>
+            <button class="btn btn-primary"  name="alldata">全部数据</button>
+            <button class="btn btn-danger"  type="button" style="display: inline-block"
+            data-bs-toggle="modal" data-bs-target="#recharge">充值积分</button>
+
+        </form>
+
+
+
+</div>
+
+    </div>
+    <div class="row">
+
+    {% if alldata %}
+        <form enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <div class="input-group input-group-lg" style=" margin-top: 10px;margin-right: 10px;margin-left: 15px; display: flex;">
+                <input id="stu_name" style="width: 600px" type="text"  name="dataname" placeholder="请输入要查询的数据名">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary" style="margin-top: 3px;margin-left: 10px" name="query_btn">查询数据</button>
+                </div>
+            </div>
+        </form>
+        <table class="table table-striped">
+  <caption>
+</caption>
+  <thead>
+    <tr>
+      <th width="40%">数据简介</th>
+      <th>下载次数</th>
+      <th>所需积分</th>
+      <th>发布者</th>
+      <th>发布时间</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in alldata %}
+    <tr>
+      <td>{{t.brief}}</td>
+      <td>{{ t.downloadTimes }}</td>
+      <td>{{ t.points }}</td>
+
+        <td>{% if user.id != t.user.id %}
+            {{ t.user.name }}
+            {% else %}
+            <div style="color: #026102">{{ t.user.name }}</div>
+            {% endif %}
+        </td>
+        <td>{{ t.time |date:"Y-m-d H:i:s" }}</td>
+      <td>{% if user.id != t.user.id %}
+            {% if t.id not in buyList %}
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#buyData1" onclick="tip1.value='确定花费{{ t.points }}积分购买该数据吗';
+              buyer.value='{{ user.id }}';seller.value='{{ t.user.id }}';shareDataId.value='{{ t.id }}'">购买数据</button>
+                {% else %}
+                          <button type="button" class="btn btn-success" onclick="window.location.href='../../media/dataShare/{{ t.file_name }}'">下载数据</button>
+                {% endif %}
+          {% else %}
+          <button type="button" class="btn btn-success" onclick="window.location.href='../../media/dataShare/{{ t.file_name }}'">下载数据</button>
+          {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+        <ul class="pagination pagination-lg justify-content-center ">
+                {% if alldata.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?allpage={{ alldata.previous_page_number }}">&larr;
+                        上一页</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">&larr; 上一页</a>
+                    </li>
+                {% endif %}&nbsp;&nbsp;&nbsp;
+                <h3 style="margin-top:10px">{{ alldata.number }} / {{ alldata.paginator.num_pages }}</h3>
+                &nbsp;&nbsp;&nbsp;
+                {% if alldata.has_next %}
+                    <li class="page-item"><a class="page-link" href="?allpage={{ alldata.next_page_number }}">下一页
+                        &rarr;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">下一页 &rarr;</a></li>
+                {% endif %}
+
+            </ul>
+
+    {% elif mydata or flag%}
+
+        <button class="btn btn-danger" style="margin-left: 30px;width: 90px" data-bs-toggle="modal" data-bs-target="#updata" >发布数据</button>
+        {% if flag %}
+            <h1>当前还没有数据，快去发布吧！</h1>
+            {% else %}
+            <table class="table table-striped">
+  <thead>
+    <tr>
+      <th width="40%">数据简介</th>
+      <th>下载次数</th>
+      <th>所需积分</th>
+      <th>发布者</th>
+      <th>发布时间</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in mydata %}
+    <tr>
+      <td>{{t.brief}}</td>
+      <td>{{ t.downloadTimes }}</td>
+      <td>{{ t.points }}</td>
+
+        <td>{{ t.user.name }}
+        </td>
+        <td>{{ t.time |date:"Y-m-d H:i:s" }}</td>
+      <td>
+          <button type="button" class="btn btn-success" onclick="window.location.href='../../media/dataShare/{{ t.file_name }}'">下载数据</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeData"
+                  onclick="brief.value='{{ t.brief }}';points.value='{{ t.points }}';dataId.value='{{ t.id }}'">修改数据</button>
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delData" onclick="dataId1.value='{{ t.id }}'" >删除数据</button>
+      </td>
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+             {% endif %}
+        <ul class="pagination pagination-lg justify-content-center ">
+                {% if mydata.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?mypage={{ mydata.previous_page_number }}">&larr;
+                        上一页</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">&larr; 上一页</a>
+                    </li>
+                {% endif %}&nbsp;&nbsp;&nbsp;
+                <h3 style="margin-top:10px">{{ mydata.number }} / {{ mydata.paginator.num_pages }}</h3>
+                &nbsp;&nbsp;&nbsp;
+                {% if mydata.has_next %}
+                    <li class="page-item"><a class="page-link" href="?mypage={{ mydata.next_page_number }}">下一页
+                        &rarr;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">下一页 &rarr;</a></li>
+                {% endif %}
+
+            </ul>
+
+    {% elif buydata %}
+        <br>
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+                            <button class="btn btn-danger" type="submit" style="margin-left: 16px" name="buyrecord">购买记录</button>
+        </form>
+            <table class="table table-striped">
+
+  <thead>
+    <tr>
+      <th width="40%">数据简介</th>
+      <th>下载次数</th>
+      <th>所需积分</th>
+      <th>发布者</th>
+      <th>发布时间</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in buydata %}
+    <tr>
+      <td>{{t.data.brief}}</td>
+      <td>{{ t.data.downloadTimes }}</td>
+      <td>{{ t.data.points }}</td>
+
+        <td>{{ t.data.user.name }}
+        </td>
+        <td>{{ t.data.time |date:"Y-m-d H:i:s" }}</td>
+      <td>
+          <button type="button" class="btn btn-success" onclick="window.location.href='../../media/dataShare/{{ t.data.file_name }}'">下载数据</button>
+      </td>
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+
+        <ul class="pagination pagination-lg justify-content-center ">
+                {% if buydata.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?buypage={{ buydata.previous_page_number }}">&larr;
+                        上一页</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">&larr; 上一页</a>
+                    </li>
+                {% endif %}&nbsp;&nbsp;&nbsp;
+                <h3 style="margin-top:10px">{{ buydata.number }} / {{ buydata.paginator.num_pages }}</h3>
+                &nbsp;&nbsp;&nbsp;
+                {% if buyrecorddata.has_next %}
+                    <li class="page-item"><a class="page-link" href="?buypage={{ buydata.next_page_number }}">下一页
+                        &rarr;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">下一页 &rarr;</a></li>
+                {% endif %}
+
+            </ul>
+
+    {% elif buyrecord %}
+        <br>
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+                            <button class="btn btn-danger" type="submit" style="margin-left: 16px" name="buyrecord">购买记录</button>
+        </form>
+                    <table class="table table-striped">
+  <thead>
+    <tr>
+      <th width="40%">数据简介</th>
+      <th>下载次数</th>
+      <th>所需积分</th>
+      <th>发布者</th>
+      <th>发布时间</th>
+      <th>购买时间</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in buyrecord %}
+    <tr>
+      <td>{{t.data.brief}}</td>
+      <td>{{ t.data.downloadTimes }}</td>
+      <td>{{ t.data.points }}</td>
+
+        <td>{{ t.data.user.name }}
+        </td>
+        <td>{{ t.data.time |date:"Y-m-d H:i:s" }}</td>
+        <td>{{ t.time |date:"Y-m-d H:i:s" }}</td>
+
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+
+        <ul class="pagination pagination-lg justify-content-center ">
+                {% if buyrecord.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?buyrecordpage={{ buyrecord.previous_page_number }}">&larr;
+                        上一页</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">&larr; 上一页</a>
+                    </li>
+                {% endif %}&nbsp;&nbsp;&nbsp;
+                <h3 style="margin-top:10px">{{ buyrecorddata.number }} / {{ buyrecorddata.paginator.num_pages }}</h3>
+                &nbsp;&nbsp;&nbsp;
+                {% if buyrecorddata.has_next %}
+                    <li class="page-item"><a class="page-link" href="?buyrecordpage={{ buyrecorddata.next_page_number }}">下一页
+                        &rarr;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">下一页 &rarr;</a></li>
+                {% endif %}
+
+            </ul>
+    {% endif %}
+    </div>
+    <form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal " id="updata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">发布数据</h4>
+                </div>
+
+                <div class="form-group" style="padding: 10px;">
+                    <h3>简介</h3>
+                    <input  class="form-control" placeholder="请输入20字以内的数据简介" style="height: 50px"
+                            name="brief"  required>
+                    <h3 title="文件后缀必须为zip">文件</h3>
+                    <input type="file" title="文件后缀必须为zip" accept=".zip" name="filedata" required>
+                    <h3>积分</h3>
+                    <input type="number" placeholder="下载该文件消耗的积分" name="points" style="width: 400px" min="0" max="999999" required>
+                </div>
+
+                <input type="hidden" name="student_id" value="{{user.id}}">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-warning" name="updata">发布数据</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+        <form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal " id="changeData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">修改数据</h4>
+                </div>
+                    <input type="hidden" id="dataId" name="dataId" value="" >
+                <div class="form-group" style="padding: 10px;">
+                    <h3>简介</h3>
+                    <input  class="form-control" placeholder="请输入20字以内的数据简介" style="height: 50px"
+                            name="brief" id="brief" required>
+                    <h3 title="文件后缀必须为zip">文件</h3><span style="color: red">需要修改则重新上传</span>
+                    <input type="file" title="文件后缀必须为zip" accept=".zip" name="filedata">
+                    <h3>积分</h3>
+                    <input type="number" placeholder="下载该文件消耗的积分" name="points" id="points" style="width: 400px"  min="0" max="999999" required>
+                </div>
+
+                <input type="hidden" name="student_id" value="{{user.id}}">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-warning" name="changeData">修改数据</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+<form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal " id="delData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">删除数据</h4>
+                </div>
+                    <input type="hidden" id="dataId1" name="dataId" value="" >
+                <div class="form-group" style="padding: 10px;">
+                    <p style="color: red">确定删除该数据吗？</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-danger" name="delData">删除数据</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+    <form role="form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="modal " id="buyData1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         >
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">购买数据</h4>
+                </div>
+                    <input type="hidden" id="buyer" name="buyer" value="" >
+                    <input type="hidden" id="seller" name="seller" value="" >
+                    <input type="hidden" id="shareDataId" name="shareDataId" value="" >
+                <div class="form-group" style="padding: 10px;">
+                    <textarea style="color: red;width: 300px;" id="tip1" ></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-danger" name="purchaseData">购买数据</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+    <form role="form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="modal " id="recharge" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         >
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">充值积分</h4>
+                </div>
+                <div class="form-group" style="padding: 10px;">
+                    <h3>账号</h3>
+                    <input required placeholder="请输入充值账号" name="username">
+                    <h3>积分数量</h3>
+                    <input required placeholder="请输入充值积分数量" type="number" min="1" max="999999" name="count">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-danger" name="recharge">充值</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+{% endblock %}

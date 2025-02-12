@@ -1,0 +1,189 @@
+{% extends 'student_index.html' %}
+{% block main %}
+    <div class="row">
+        {% if notice == '1' %}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert"
+                        aria-hidden="true">
+                    &times;
+                </button>
+                文件格式错误或内容不符合标准。
+            </div>
+        {% elif notice == '2' %}
+            <div class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert"
+                        aria-hidden="true">
+                    &times;
+                </button>
+                成功！很好地完成了提交。您的得分为{{ score }}
+            </div>
+    {% endif %}
+    </div>
+    <div class="row">
+        <form id="my-form" action="" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="race_id" value="{{ id }}">
+        </form>
+        <div class="jumbotron">
+            <div class="container" >
+                <div class="col-md-8"><h3>【{{race_data.type}}】{{race_data.name}}</h3>
+                    <div style="height: 30px"></div>
+                    <span style="color: gray">开始时间&nbsp;&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.begin_time }}&nbsp;&nbsp;</span>
+                    <span style="color: gray">结束时间&nbsp;&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.over_time }}&nbsp;&nbsp;</span>
+                    <span style="color: gray">状态&nbsp;&nbsp;</span>
+                    {% if now_time > race_data.over_time %}
+                        <span style="font-size: 17px">已结束&nbsp;&nbsp;</span><br><br>
+                    {% elif now_time < race_data.begin_time %}
+                        <span style="font-size: 17px" >未开始&nbsp;&nbsp;</span><br><br>
+                    {% else %}
+                        <span style="font-size: 17px">进行中&nbsp;&nbsp;</span><br><br>
+                    {% endif %}
+                    <span style="color: gray">发起人&nbsp;&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.teacher_id.name }}&nbsp;&nbsp;</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span style="color: gray">课程名称&nbsp;</span>
+                    <span style="font-size: 17px">{{ race_data.class_id.name }}&nbsp;&nbsp;</span>
+                    <br><br>
+                    {% if now_time > race_data.over_time %}
+                    <button type="button" class="btn btn-primary btn-lg"
+                                style="width: 200px;height: 50px" disabled="disabled">已结束
+                        </button>
+                    {% elif now_time < race_data.begin_time %}
+                    <button type="button" class="btn btn-warning"
+                                style="width: 200px;height: 50px" disabled="disabled">未开始
+                        </button>
+                    {% else %}
+                        {% if id in join_race_id %}
+                                <button type="button" class="btn btn-success" disabled="disabled"
+                                        style="width: 200px;height: 50px">已参加
+                                </button>
+                        {% else %}
+                                <button type="button" class="btn btn-danger"
+                                        style="width: 200px;height: 50px" id="submit-btn">参加比赛
+                                </button>
+                        {% endif %}
+                {% endif %}
+                </div>
+                <div class="col-md-4"><img
+                        src="../static/image/student_race_detail.jpg"
+                        alt="Student Race Detail"
+                        style="width: 90%;height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" >
+        <div class="col-md-3" style="height: 2000px;background-color: white;width: auto">
+            <div class="row">
+                <ul class="nav nav-pills nav-stacked" style=" white-space: nowrap;">
+                    <li><a onclick="openCity(event, 'data')">赛题与数据</a></li>
+                    <li><a onclick="openCity(event, 'rank1')">排行榜</a></li>
+                    <li><a href="/student/student_submit_record.html">提交记录</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-1" style="background-color: white;height: 2000px"></div>
+        <div class="col-md-8" style="background-color: white;height: 2000px">
+            <div class="row">
+                <div id="data" class="tab-content fade in active">
+                    <div>{{race_data.content|safe}}</div>
+                    {% if id in join_race_id and race_data.begin_time <= now_time and now_time <= race_data.over_time %}
+                        <h3><a href="../../media/upload/{{race_data.file_data}}" download="{{race_data.name}}">下载竞赛数据</a></h3>
+                        <br>
+                        <form role="form" method="post" action="" enctype="multipart/form-data">
+                            <div class="form-group">
+                                {% csrf_token %}
+                                <label for="submit_answer">上传答案</label>
+                                <input type="file" id="submit_answer" name="submit_answer" accept=".csv">
+                                <p class="help-block" style="font-size: 13px">仅支持csv文件，第一行需为字段名，提交时请确保样本格式，数量正确</p>
+                            </div>
+                            <input type="hidden" name="race_id" value="{{ id }}">
+                            <input type="hidden" name="submit_answer_btn" value="1">
+                            <button type="submit" class="btn btn-warning"
+                                    style="width: 200px;height: 50px;font-size: 20px;font-weight: bolder" >提交
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+                <div id="rank1" class="tab-content fade">
+                    <table class="table table-striped" style="width: 1000px;border-collapse: collapse;
+
+			border: 1px solid #ddd;
+			color: #333;
+			font-size: 14px;">
+                        <caption>排行</caption>
+                        <colgroup>
+                            <col style="width: 10%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+                            <col style="width: 20%;">
+                            <col style="width: 30%;">
+                        </colgroup>
+                        <thead>
+                        <tr style="text-align: center">
+                            <th>排名</th>
+                            <th>参与者</th>
+                            <th>组织</th>
+                            <th>{{ race_data.evaluate_type }}</th>
+                            <th>最优成绩提交日</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for line in rank %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ line.student_id.name }}</td>
+                                    <td>{{line.student_id.organization}}</td>
+                                    <td>{{ line.score }}</td>
+                                    <td>{{ line.time }}</td>
+                                </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>function openCity(evt, cityName) {
+    var i, tabcontent;
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+                tabcontent[i].className="tab-content";
+
+    }
+    document.getElementById(cityName).style.display = "block";
+    document.getElementById(cityName).classList.add("active");
+}
+
+    </script>
+    <script>
+        var form = document.getElementById('my-form');
+        var submitBtn = document.getElementById('submit-btn');
+
+        submitBtn.addEventListener('click', function () {
+            form.submit();
+        });
+    </script>
+    <script>
+    // 获取当前页面的 URL
+var currentURL = window.location.href;
+
+// 解析 URL，提取查询参数
+var urlParams = new URLSearchParams(currentURL);
+
+// 检测特定值是否在查询参数中
+var specificValue = "1"; // 将 "yourValue" 替换为您要检测的值
+if (urlParams.has("rank") && urlParams.get("rank") === specificValue) {
+    document.getElementById("data").style.display = "none";
+    document.getElementById("data").className = "tab-content fade";
+    document.getElementById("rank1").className = "tab-content active";
+    document.getElementById("rank1").style.display = "block";
+    console.log("特定值存在于 URL 中");
+}
+    </script>
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends 'teacher_index.html' %}
+{% block main %}
+    <style>
+        h4 {
+            font-weight: bold;
+            font-size: large;
+        }
+    </style>
+    <div class="row">
+        {% if notice == '1' %}
+            <div class="alert alert-danger alert-dismissible fade show">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>错误!</strong> 文件格式错误或竞赛标题未填写
+            </div>
+        {% elif notice == '2' %}
+            <div class="alert alert-success alert-dismissible fade show">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>成功!</strong> 成功修改了比赛。
+            </div>
+        {% else %}
+        {% endif %}
+    </div>
+    <br>
+    <div class="row">
+        <form action="" enctype="multipart/form-data" method="post"
+              style="background-color: #f6f6f6;color: rgb(0,0,0)">
+            {% csrf_token %}
+            <input type="hidden" name="race_id" value="{{ data.id }}">
+            <div class="row">
+                <div class="col-md-2"></div>
+
+                <div class="col-md-8" style="background-color: white">
+                    <h4>竞赛标题</h4>
+                    <input class="form-control" name='race_name' placeholder="请输入竞赛标题" value="{{ data.name }}"
+                           type="text"
+                           required style="">
+                    <hr>
+                    <h4>竞赛类型</h4>
+                    <div class="radio">
+                        {% if data.type == '学习赛' %}
+                            <label>
+                                <input id="optionsRadios1" name="race_type" type="radio" value="学习赛" required
+                                       checked>
+                                学习赛
+                            </label>
+                            <label>
+                                <input id="optionsRadios2" name="race_type" type="radio" value="学术研究赛"
+                                       required>学术研究赛
+                            </label>
+                            &nbsp;{% else %}
+                            <label>
+                                <input id="optionsRadios1" name="race_type" type="radio" value="学习赛" required>
+                                学习赛
+                            </label>
+                            <label>
+                                <input id="optionsRadios2" name="race_type" type="radio" value="学术研究赛"
+                                       required checked>学术研究赛
+                            </label>
+                        {% endif %}
+                    </div>
+                    <hr>
+                    <h4 style="display: inline-block;">开始时间</h4>
+                    <input name="begin_time" style="width: 200px" type="date" value="{{ data.begin_time }}"
+                           id="begin_time" required>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h4 style="display: inline-block">结束时间</h4>
+                    <input name="over_time" style="width: 200px" type="date" value="{{ data.over_time }}" id="over_time"
+                           required>
+                    <hr>
+                    <h4 data-bs-toggle="tooltip" data-bs-placement="left" title="根据评价指标计算得分以及排行">
+                        评价指标</h4>
+                    <div class="radio" style="display: inline-block;width: 100px">
+                        {% if data.evaluate_type == "ACC" %}
+                        <label>
+                            <input name="evaluate_type" type="radio" value="ACC" id="radioOption"
+                                   data-bs-toggle="tooltip" data-bs-placement="left" title="准确率" required checked> ACC
+                        </label>
+                        {% else %}
+                            <label>
+                            <input name="evaluate_type" type="radio" value="ACC" id="radioOption"
+                                   data-bs-toggle="tooltip" data-bs-placement="left" title="准确率" required> ACC
+                        </label>
+                        {% endif %}
+                    </div>
+                    <div class="radio" style="display: inline-block;width: 100px">
+                        {% if data.evaluate_type == "P" %}
+                        <label data-bs-toggle="tooltip" data-bs-placement="left" title="精准率"
+                        >
+                            <input name="evaluate_type" type="radio" value="P" required checked> P
+                        </label>
+                        {% else %}<label data-bs-toggle="tooltip" data-bs-placement="left" title="精准率"
+                        >
+                            <input name="evaluate_type" type="radio" value="P" required> P
+                        </label>{% endif %}
+                    </div>
+                    <div class="radio" style="display: inline-block;width: 100px">
+                        {% if data.evaluate_type == "R" %}
+
+                        <label data-bs-toggle="tooltip" data-bs-placement="left" title="召回率"
+                        >
+                            <input name="evaluate_type" type="radio" value="R" required checked> R
+                        </label>
+                        {% else %}<label data-bs-toggle="tooltip" data-bs-placement="left" title="召回率"
+                        >
+                            <input name="evaluate_type" type="radio" value="R" required> R
+                        </label>{% endif %}
+                    </div>
+                    <div class="radio" style="display: inline-block;width: 100px">
+                        {% if data.evaluate_type == "AUC" %}
+                        <label data-bs-toggle="tooltip" data-bs-placement="left" title="ROC曲线下的面积"
+                        >
+                            <input name="evaluate_type" type="radio" value="AUC" required checked>AUC
+                        </label>
+                        {% else %}<label data-bs-toggle="tooltip" data-bs-placement="left" title="ROC曲线下的面积"
+                        >
+                            <input name="evaluate_type" type="radio" value="AUC" required>AUC
+                        </label>{% endif %}
+                    </div>
+                    <div class="radio" style="display: inline-block;width: 100px">
+                        {% if data.evaluate_type == "RMSE" %}
+                        <label data-bs-toggle="tooltip" data-bs-placement="left" title="均方根误差"
+                        >
+                            <input name="evaluate_type" type="radio" value="RMSE" required checked>RMSE
+                        </label>
+                        {% else %}<label data-bs-toggle="tooltip" data-bs-placement="left" title="均方根误差"
+                        >
+                            <input name="evaluate_type" type="radio" value="RMSE" required>RMSE
+                        </label>{% endif %}
+                    </div>
+                    <div class="radio" style="display: inline-block;width: 100px">
+                        {% if data.evaluate_type == "F1" %}
+                        <label data-bs-toggle="tooltip" data-bs-placement="left" title="F1分数"
+                        >
+                            <input name="evaluate_type" type="radio" value="F1" required checked>F1
+                        </label>
+                        {% else %}<label data-bs-toggle="tooltip" data-bs-placement="left" title="F1分数"
+                        >
+                            <input name="evaluate_type" type="radio" value="F1" required>F1
+                        </label>{% endif %}
+                    </div>
+                    <hr>
+                    <h4 style="display: inline-block" title="文件后缀必须为zip" data-bs-toggle="tooltip"
+                        data-bs-placement="top">文件上传</h4>
+                    <input name="file_data" style="display: inline-block;width: 170px" type="file" title="请上传zip文件"
+                           accept=".zip">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <h4 style="display: inline-block" title="答案后缀必须为csv" data-bs-toggle="tooltip"
+                        data-bs-placement="top">答案上传</h4>
+                    <input name="file_answer" style="display: inline-block" type="file" title="请上传csv文件"
+                           accept=".csv">  <P style="color: red">如果文件需要更改请重新上传，否则不需要</P>
+
+                    <hr>
+                    <h4 data-bs-toggle="tooltip" data-bs-placement="left" title="选择发布的班级，可多选">课程选择</h4>
+                    {% for t in class_data %}
+                                    {% if data.class_id.id == t.id %}
+                                            <div class="radio" style="display: inline-block;width: 200px">
+                                                <label>
+                                                    <input checked id="optionsRadios1" name="class_name" type="radio" value="{{t.id}}" required>{{ t.name }}
+                                                </label>
+                                            </div>
+                                    {% else %}
+                                            <div class="radio" style="display: inline-block;width: 200px">
+                                                <label>
+                                                    <input id="optionsRadios1" name="class_name" type="radio" value="{{ t.id }}" required>{{t.name}}
+                                                </label>
+                                            </div>
+                                    {% endif %}{% endfor %}
+
+                    <hr>
+                    <h4>竞赛内容</h4>
+                    <script class="" id="container" name="question_introduce" style="height: 500px;"
+                            type="text/plain">{{ data.content|safe }}</script>
+                    <br>
+                    <button class="btn btn-success" style="height: 50px;width: 200px;font-size: 20px;font-weight: bold;"
+                            type="submit">修改竞赛
+                    </button>
+                </div>
+                <div class="col-md-2"></div>
+
+            </div>
+        </form>
+        <script>
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        </script>
+        <script charset="utf-8" src="/static/ueditor/ueditor.config.js" type="text/javascript"></script>
+        <script charset="utf-8" src="/static/ueditor/ueditor.all.js" type="text/javascript"></script>
+        <script charset="utf-8" src="/static/ueditor/lang/zh-cn/zh-cn.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            var ue = UE.getEditor('container');
+        </script>
+        <script>
+            const beginTimeInput = document.getElementById('begin_time');
+            const overTimeInput = document.getElementById('over_time');
+
+            // 监听begin_time和over_time的值变化
+            beginTimeInput.addEventListener('input', validateTime);
+            overTimeInput.addEventListener('input', validateTime);
+
+            function validateTime() {
+                const beginTimeValue = new Date(beginTimeInput.value).getTime();
+                const overTimeValue = new Date(overTimeInput.value).getTime();
+
+                if (beginTimeValue && overTimeValue && beginTimeValue > overTimeValue) {
+                    // 如果begin_time大于over_time，则给出错误提示或进行相应的处理
+                    window.alert("错误：开始时间不能晚于结束时间，请重新选择时间范围");
+                    // 清空begin_time和over_time的值
+                    overTimeInput.value = '';
+                }
+            }
+        </script>
+
+    </div>
+{% endblock %}

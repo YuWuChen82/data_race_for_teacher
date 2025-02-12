@@ -1,0 +1,282 @@
+{% extends 'student_index.html' %}
+{% block main %}
+    <div class="row" style="background-color: white;">
+        <ul class="nav nav-tabs" id="myTab">
+            <li class="active">
+                <a data-toggle="tab" href="#all" style="font-weight: bolder">
+                    全部比赛
+                </a>
+            </li>
+            <li><a data-toggle="tab" href="#learn" style="font-size: 15px;margin-top: 10px">学习赛</a></li>
+            <li><a data-toggle="tab" href="#study" style="font-size: 15px;margin-top: 10px">学术研究赛</a></li>
+            <li><a data-toggle="tab" href="#my_race" style="font-weight: bolder">我的比赛</a></li>
+
+
+        </ul>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="tab-content" id="myTabContent" style="height: 600px">
+                    <div class="tab-pane fade in active" id="all">
+                        <div class="row" style="height: 650px">
+                            {% for t in race_data %}
+                            <div class="col-md-6">
+                                <div class="panel panel-default" style="width: 500px">
+                                    <div class="panel-heading">
+                                        <span style="font-size: 15px; margin-right: 10px;">
+                                            课程名称：{{ t.class_id.name }}
+                                        </span>
+                                    </div>
+                                    <div class="panel-body" style="background-color: #ffffff;font-weight: bold">
+
+                                    <img src="../static/image/{{ t.picture }}" style="width: auto;height: 50px">
+                                        <p style="display: inline-block">{{ t.name }}</p>
+                                    </div>
+                                    <div class="panel-body"
+                                         style="background-color: #fbf8f8; display: flex; position: relative;">
+                                        {% if t.type == '学习赛' %}
+                                        <span class="label label-warning" style="margin-top: 6px;text-align: center">学习赛</span>&nbsp;
+                                        {% else %}
+                                        <span class="label label-danger" style="margin-top: 6px;text-align: center">学术研究赛</span>&nbsp;
+                                        {% endif %}
+                                        <span class="label label-info" style="foncolor: #ffffff;text-align: center;margin-top: 6px">
+                                                {{ t.begin_time }}
+                                            &nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;{{ t.over_time }}</span>
+                                        {% if now_time > t.over_time %}
+                                        <button class="btn btn-primary btn-lg"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder">
+                                            已结束
+                                        </button>
+                                        {% elif now_time < t.begin_time %}
+                                        <button class="btn btn-warning"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder">
+                                            未开始
+                                        </button>
+                                        {% elif t.id in join_race_id %}
+                                        <button class="btn btn-success"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'">
+                                            已参加
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-danger"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'">
+                                            进入比赛
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    <ul class="pager">
+                    {% if race_data.has_previous %}
+                        <li class="previous"><a href="?page={{ race_data.previous_page_number }}&page1={{ race_data1.number }}">&larr; 上一页</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a href="#">&larr; 上一页</a>
+                        </li>
+                    {% endif %}
+                    <span>{{ race_data.number }} / {{ race_data.paginator.num_pages }}</span>
+                    {% if race_data.has_next %}
+                        <li class="next"><a href="?page={{ race_data.next_page_number }}&page1={{ race_data1.number }}">下一页 &rarr;</a></li>
+                    {% else %}
+                        <li class="next disabled"><a href="#">下一页 &rarr;</a></li>
+                    {% endif %}
+
+                </ul>
+                    </div>
+                    <div class="tab-pane fade" id="learn">
+                        <div class="row">
+                            {% for t in race_data %}
+                                {% if t.type == '学习赛' %}
+                                <div class="col-md-6">
+                                <div class="panel panel-default" style="width: 500px">
+                                    <div class="panel-heading">
+                                        <span style="font-size: 15px; margin-right: 10px;">
+                                            课程名称：{{ t.class_id.name }}
+                                        </span>
+                                    </div>
+                                    <div class="panel-body" style="background-color: #ffffff;font-weight: bold">
+
+                                    <img src="../static/image/{{ t.picture }}" style="width: auto;height: 50px">
+                                        <p style="display: inline-block">{{ t.name }}</p>
+                                    </div>
+                                    <div class="panel-body"
+                                         style="background-color: #fbf8f8; display: flex; position: relative;">
+                                        <span class="label label-warning" style="margin-top: 6px;text-align: center">学习赛</span>&nbsp;
+                                        <span class="label label-info" style="foncolor: #ffffff;text-align: center;margin-top: 6px">
+                                                {{ t.begin_time }}
+                                            &nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;{{ t.over_time }}</span>
+                                        {% if now_time > t.over_time %}
+                                        <button class="btn btn-primary btn-lg"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder">
+                                            已结束
+                                        </button>
+                                        {% elif now_time < t.begin_time %}
+                                        <button class="btn btn-warning"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder">
+                                            未开始
+                                        </button>
+                                        {% elif t.id in join_race_id %}
+                                        <button class="btn btn-success"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'">
+                                            已参加
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-danger"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'">
+                                            进入比赛
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                                            {% endif %}
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="study">
+                        <div class="row">
+                            {% for t in race_data %}
+                                {% if t.type == "学术研究赛" %}
+                                <div class="col-md-6">
+                                <div class="panel panel-default" style="width: 500px">
+                                    <div class="panel-heading">
+                                        <span style="font-size: 15px; margin-right: 10px;">
+                                            课程名称：{{ t.class_id.name }}
+                                        </span>
+                                    </div>
+                                    <div class="panel-body" style="background-color: #ffffff;font-weight: bold">
+
+                                    <img src="../static/image/{{ t.picture }}" style="width: auto;height: 50px">
+                                        <p style="display: inline-block">{{ t.name }}</p>
+                                    </div>
+                                    <div class="panel-body"
+                                         style="background-color: #fbf8f8; display: flex; position: relative;">
+                                        <span class="label label-danger" style="margin-top: 6px;text-align: center">学术研究赛</span>&nbsp;
+                                        <span class="label label-info" style="foncolor: #ffffff;text-align: center;margin-top: 6px">
+                                                {{ t.begin_time }}
+                                            &nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;{{ t.over_time }}</span>
+                                        {% if now_time > t.over_time %}
+                                        <button class="btn btn-primary btn-lg"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder">
+                                            已结束
+                                        </button>
+                                        {% elif now_time < t.begin_time %}
+                                        <button class="btn btn-warning"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder">
+                                            未开始
+                                        </button>
+                                        {% elif t.id in join_race_id %}
+                                        <button class="btn btn-success"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'">
+                                            已参加
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-danger"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.id }}'">
+                                            进入比赛
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                                {% endif %}
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="my_race">
+                        <div class="row">
+                            <div class="row" style="height: 600px">
+                            {% if race_data1 %}
+                {% for t in race_data1 %}
+                    <div class="col-md-6">
+                                <div class="panel panel-default" style="width: 500px">
+                                    <div class="panel-heading">
+                                        <span style="font-size: 15px; margin-right: 10px;">
+                                            课程名称：{{ t.race_id.class_id.name }}
+                                        </span>
+                                    </div>
+                                    <div class="panel-body" style="background-color: #ffffff;font-weight: bold">
+
+                                    <img src="../static/image/{{ t.race_id.picture }}" style="width: auto;height: 50px">
+                                        <p style="display: inline-block">{{ t.race_id.name }}</p>
+                                    </div>
+                                    <div class="panel-body"
+                                         style="background-color: #fbf8f8; display: flex; position: relative;">
+                                        {% if t.race_id.type == '学习赛' %}
+                                        <span class="label label-warning" style="margin-top: 6px;text-align: center">学习赛</span>&nbsp;
+                                        {% else %}
+                                        <span class="label label-danger" style="margin-top: 6px;text-align: center">学术研究赛</span>&nbsp;
+                                        {% endif %}
+                                        <span class="label label-info" style="foncolor: #ffffff;text-align: center;margin-top: 6px">
+                                                {{ t.race_id.begin_time }}
+                                            &nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;{{ t.race_id.over_time }}</span>
+                                        {% if now_time > t.race_id.over_time %}
+                                        <button class="btn btn-primary btn-lg"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.race_id.id }}'"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder">
+                                            已结束
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-danger"
+                                                style="position: absolute; right: 0; bottom: 0; height: 100%; width: 25%;font-size: 20px;font-weight:bolder"
+                                                onclick="window.location.href ='/student/student_race_detail.html?id={{ t.race_id.id }}'">
+                                            进行中
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                {% endfor %}
+                            {% endif %}
+            </div>
+                        </div>
+                    <ul class="pager">
+                    {% if race_data1.has_previous %}
+                        <li class="previous"><a href="?page1={{ race_data1.previous_page_number }}&page={{ race_data.number }}&myrace=1">&larr; 上一页</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a href="#">&larr; 上一页</a>
+                        </li>
+                    {% endif %}
+                    <span>{{ race_data1.number }} / {{ race_data1.paginator.num_pages }}</span>
+                    {% if race_data1.has_next %}
+                        <li class="next"><a href="?page1={{ race_data1.next_page_number }}&page={{ race_data.number }}&myrace=1">下一页 &rarr;</a></li>
+                    {% else %}
+                        <li class="next disabled"><a href="#">下一页 &rarr;</a></li>
+                    {% endif %}
+
+                </ul>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <script>
+    // 获取当前页面的 URL 参数
+var urlParams = new URLSearchParams(window.location.search);
+
+// 检查是否存在名为 "my_race" 的 URL 参数
+if (urlParams.has("myrace")) {
+    // 如果 "my_race" 参数存在，激活 "我的比赛" 选项卡
+    $('#myTab a[href="#my_race"]').tab('show');
+}
+
+    </script>
+{% endblock %}

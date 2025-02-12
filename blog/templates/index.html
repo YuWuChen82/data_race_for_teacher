@@ -1,0 +1,162 @@
+{% extends request.session.is_student|yesno:"master.html,masterTeacher.html" %}
+{% block content %}
+<div class="blog-page clearfix">
+    <div class="container">
+    <div class="row">
+    <div class="col-lg-9 col-md-8">
+        {% if category %}
+        <div class=" page-top clearfix">
+            <div class="container">
+                <!--page main heading-->
+                <h1 class="entry-title">{{category}}</h1>
+                <nav class="bread-crumb">
+                    <ul class="breadcrumb clearfix">
+                            <li><a href="/blog/index.html">主页</a><span class="divider"></span></li>
+                            <li class="active">{{category}}<span class="divider"></span></li>
+                            
+                            <li class="active">{{request.GET.tag}}&nbsp;{{request.GET.q}}</li>
+                            
+                                
+                            
+                        </ul>
+                </nav>
+
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="blog-post-listing clearfix"  >
+            {% for t in articles %}
+            <article  class="post hentry clearfix">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="left_meta clearfix entry-meta">
+
+                            <time class="entry-time updated" datetime="2014-05-10T11:07:36+00:00">{{t.pub_time|date:"m"}}月<strong>{{t.pub_time|date:"d"}}日</strong></time>
+                            <span class="comments_count clearfix entry-comments-link">
+                                    <p>阅读数  {{t.view_times}}</p>
+                            </span>
+
+
+                        </div>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class="right-contents">
+                            <header class="entry-header">
+                                <!--post image-->
+                                <div class="post-image">
+                                    <a href="article.html?id={{t.id}}">
+                                        <img src="../media/article/{{t.img}}" class=" wp-post-image"  width="150px" height="250px" alt="封面图片"/>
+                                    </a>
+                                </div>
+
+                                <!--post title-->
+                                <h3 class="entry-title"><a href="article.html?id={{t.id}}">{{t.title}}</a></h3>
+                                <section class="widget widget_tag_cloud">
+                                        <div class="tagcloud">
+                                                <a>{{t.category}}</a>
+                                        </div>
+                                </section>
+                                <!--author name-->
+                                <span class="entry-author">
+                                    {{t.expert.name}}
+                                    
+                                </span>
+
+                
+                            </header>
+                            <!--post content-->
+                            <div class="entry-content">
+                                <p>​​{{t.summary}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+
+            {% if  articles.paginator.num_pages != 1%}
+            <div class='pagination'>
+                
+                    第 {{ articles.number }} / {{ articles.paginator.num_pages }} 页
+
+                    {% if articles.has_previous %}
+                        <a href="?page={{ articles.previous_page_number }}"> < </a>
+                    {% endif %}
+                    {% for pg in articles.paginator.page_range %}
+                        {% if articles.number == pg %}
+                            <span class='page-numbers current'>{{pg}}</span>
+                        {% else %}
+                            <a class='page-numbers' href='?page={{pg}}'>{{pg}}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if articles.has_next %}
+                        <a class="next page-numbers" href="?page={{ articles.next_page_number }}"> > </a>
+                    {% endif %}
+                
+                
+            </div>
+            {% endif %}
+            </div>
+    </div>
+    
+    <!--sidebar-->
+        <div class="col-lg-3 col-md-4">
+            <aside class="sidebar clearfix">
+                    <div id="search" class="widget clearfix">
+                            <form method="get" id="search-form" class="search-form" action="/blog/search.html">
+                                <div>
+                                    <input type="text" value="" name="q" id="search-text" placeholder="搜索">
+                                </div>
+                            </form>
+                    </div>
+                <section class="widget">
+                    <div class="expert-title">
+                        <h3 class="title">今日值班</h3>
+                    </div>
+
+                    {% for t in experts %}
+                    <div class="expert">
+                    
+                    <div class="expert-pic">
+                        <img src="../media/avatar/{{t.avatar}}" width="80px">
+                    </div>
+            
+                    <div class="expert-description">
+                        <h5>{{t.name}}</h5>
+                        <p>擅长：{{t.domain}}</p>
+                    </div>
+                </div>
+                    {% endfor %}
+                </section>
+                <div style="height:20px"></div>
+
+
+
+            </aside>
+            <section class="widget widget_categories">
+                <h3 class="title">分类浏览</h3>
+                <ul>
+                    <li><a href="search.html?tag=编程基础" title="View all posts filed under Environment">编程基础</a></li>
+                    <li><a href="search.html?tag=学习案例" title="View all posts filed under Health Basics">学习案例</a></li>
+                    <li><a href="search.html?tag=特征工程" title="View all posts filed under Lifestyle">特征工程</a></li>
+                    <li><a href="search.html?tag=算法模型" title="View all posts filed under Lifestyle">算法模型</a></li>
+
+                </ul>
+            </section>
+
+
+
+
+
+
+        </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+
+
+

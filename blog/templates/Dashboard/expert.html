@@ -1,0 +1,77 @@
+{% extends 'Dashboard/master.html' %}
+
+{% block content %}
+<div class="row">
+
+    <div class="col-md-6">
+        <h1>管理员列表</h1>
+    </div>
+     <div class="col-md-4">
+         <h1><button type="button" class="btn btn-danger" style="float:right" onclick="window.location.href='expert2.html'">新增人员</button></h1>
+
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-10">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>头像</th>
+          <th>姓名</th>
+          <th >手机</th>
+          <th>QQ</th>
+          <th>微信</th>
+          <th>收费</th>
+            <th>擅长</th>
+            <th>介绍</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for t in experts %}
+        <tr>
+          <td><img src="../media/avatar/{{t.avatar}}" class="img-rounded" height="50px"></td>
+          <td>{{t.name}}</td>
+          <td>{{t.phone}}</td>
+          <td>{{t.wechat}}</td>
+          <td>{{t.qq}}</td>
+          <td><textarea class="form-control" rows="3">{{t.price}}</textarea></td>
+          <td><textarea class="form-control" rows="3">{{t.domain}}</textarea></td>
+           <td><textarea class="form-control" rows="3">{{t.introduction}}</textarea></td>
+           <td><button type="button" class="btn btn-primary"   onclick="window.location.href='expert2.html?id={{t.id}}'">修改</button>
+           <button type="button" class="btn btn-warning" style="display: inline-block" data-bs-toggle="modal" data-bs-target="#myModal" onclick="expertId.value={{t.id}}">删除</button></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+        </div>
+    </div>
+ 
+ <form enctype="multipart/form-data" role="form" method="post" action="">
+     {% csrf_token  %}
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">删除确认</h4>
+            </div>
+            <div class="modal-body">确定要删除吗？
+                <input style="display: none" name="id" id="expertId" value="">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">关闭</button>
+                <button type="submit" name="delete" class="btn btn-primary">提交更改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</form>
+<script>
+    $("#expert").attr("class","active")
+</script>
+
+   
+
+
+{% endblock %}

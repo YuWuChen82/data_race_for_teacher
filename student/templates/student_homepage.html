@@ -1,0 +1,168 @@
+{% extends 'student_index.html' %}
+{% block main %}
+    <div class="row">
+        <div class="col-md-4"><img src="../static/image/head_photo.jpg" class="img-circle" style="height: 300px;width: auto"></div>
+        <div class="col-md-4">
+            {% if notice == '1' %}
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert"
+                            aria-hidden="true">
+                        &times;
+                    </button>
+                    原密码不正确。
+                </div>
+        {% endif %}
+            {% if notice == '2' %}
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert"
+                            aria-hidden="true">
+                        &times;
+                    </button>
+                    新密码不能与原密码相同。
+                </div>
+        {% endif %}
+            {% if notice == '3' %}
+                <div class="alert alert-success alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert"
+                            aria-hidden="true">
+                        &times;
+                    </button>
+                    修改成功
+                </div>
+        {% endif %}
+            {% if notice == '4' %}
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert"
+                            aria-hidden="true">
+                        &times;
+                    </button>
+                    请勿提交空内容。
+                </div>
+            {% endif %}
+            {% if notice == '5' %}
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert"
+                            aria-hidden="true">
+                        &times;
+                    </button>
+                    两次密码不一致。
+                </div>
+            {% endif %}
+            {% if notice == '6' %}
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert"
+                            aria-hidden="true">
+                        &times;
+                    </button>
+                    该用户名已存在。
+                </div>
+            {% endif %}
+            {% if notice == '7' %}
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert"
+                            aria-hidden="true">
+                        &times;
+                    </button>
+                    该用户名不能为空！
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">个人信息</div>
+                    <table class="table">
+                        <tr>
+                            <td>账号</td>
+                            <td>{{ names.username }}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#change_username">
+                                    更改用户名
+                                </button></td>
+                        </tr>
+                        <tr>
+                            <td>姓名</td>
+                            <td>{{ names.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>总共参加的比赛数量</td>
+                            <td>{{ information.b}}</td>
+                        </tr>
+                        <tr>
+                            <td>密码</td>
+                            <td>
+                                **************</td><td>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change_question">
+                                    更改密码
+                                </button>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+
+    </div>
+<form role="form" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="change_question" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+                </div>
+
+                <div class="form-group" style="padding: 10px;">
+                    <h3>原密码</h3>
+                    <input type="password" class="form-control" placeholder="请输入原密码" style="height: 50px"
+                           name="old_password" >
+                    <h3>新密码</h3>
+                    <input type="password" class="form-control" placeholder="请输入新密码" style="height: 50px"
+                           name="new_password" id ="new_password">
+                    <h3>确认新密码</h3>
+                    <input type="password" class="form-control" placeholder="请输入新密码" style="height: 50px"
+                           name="repeat_password" id ="repeat_password">
+                </div>
+
+                <input type="hidden" name="student_id" value="{{names.id}}">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-warning" name="change_btn">提交更改</button>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+    <form role="form" method="post" enctype="multipart/form-data">
+        <div class="modal fade" id="change_username" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                {% csrf_token %}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">修改账号名称</h4>
+                    </div>
+
+                    <div class="form-group" style="padding: 10px;">
+                        <h3>新用户名</h3>
+                        <input type="text" class="form-control" placeholder="请输入更改后的用户名" style="height: 50px"
+                               name="new_username">
+                    </div>
+
+                    <input type="hidden" name="student_id" value="{{ names.id }}">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-warning" name="change_username">提交更改</button>
+                    </div>
+
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+    </form>
+{% endblock %}
